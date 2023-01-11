@@ -13,11 +13,12 @@ DIGIT [0-9]
 "("	 { printf("L_PAREN\n"); }
 ")"	 { printf("R_PAREN\n"); }
 "="	 { printf("EQUAL\n"); } 
-.	 { printf("Invalid character detected.\n"); }
+.	 { printf("Invalid character detected.\n");
+           return;  }
 %%
 
 main (void) {
   printf("Ctrl+D to quit.\n"); 
   yylex();
-  printf("Quitting...");
+  printf("Quitting...\n");
 }

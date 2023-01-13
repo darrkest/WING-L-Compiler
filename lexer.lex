@@ -17,8 +17,10 @@ ALPHA [a-z]
            return;  }
 %%
 
-main (void) {
+int main (int argc, char *argv[]) {
   printf("Ctrl+D to quit.\n"); 
+  yyin = fopen(argv[1], "r"); // Open the first file after a.out
   yylex();
+  fclose(yyin);
   printf("Quitting...\n");
 }

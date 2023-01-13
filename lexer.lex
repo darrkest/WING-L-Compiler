@@ -33,9 +33,11 @@ ALPHA [a-z]
 "="	 { printf("EQUAL\n"); 
 	   numEquals++;
 	 } 
-"\n"	 { printf("Code to print number of integers, operators, parenthesis, equals goes here.\n");
+"\n"	 { printf("Number of integers: %d\n", numIntegers);
+	   printf("Number of operators: %d\n", numOperators);
+	   printf("Number of parenthesis: %d\n", numParenthesis);
+	   printf("Number of equals: %d\n", numEquals); 
 	 }
-
 .	 { printf("Invalid character detected.\n");
            return;  }
 %%

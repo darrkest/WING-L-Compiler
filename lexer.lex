@@ -3,7 +3,7 @@
 %}
 
 DIGIT [0-9]
-
+ALPHA [a-z]
 %%
 {DIGIT}+ { printf("NUMBER: %s\n", yytext); }
 "+"	 { printf("ADD\n"); }

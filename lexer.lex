@@ -1,18 +1,38 @@
 %{
 #include <stdio.h>
+int numIntegers = 0;
+int numOperators = 0;
+int numParenthesis = 0;
+int numEquals = 0;
 %}
 
 DIGIT [0-9]
 ALPHA [a-z]
 %%
-{DIGIT}+ { printf("NUMBER: %s\n", yytext); }
-"+"	 { printf("ADD\n"); }
-"-"	 { printf("SUB\n"); }
-"*"	 { printf("MULT\n"); }
-"/"	 { printf("DIV\n"); }
-"("	 { printf("L_PAREN\n"); }
-")"	 { printf("R_PAREN\n"); }
-"="	 { printf("EQUAL\n"); } 
+{DIGIT}+ { printf("NUMBER: %s\n", yytext); 
+	   numIntegers++;
+	 }
+"+"	 { printf("ADD\n"); 
+           numOperators++;
+	 }
+"-"	 { printf("SUB\n"); 
+	   numOperators++;
+	 }
+"*"	 { printf("MULT\n"); 
+	   numOperators++;
+	 }
+"/"	 { printf("DIV\n"); 
+	   numOperators++;
+	 }
+"("	 { printf("L_PAREN\n"); 
+	   numParenthesis++;
+	 }
+")"	 { printf("R_PAREN\n"); 
+	   numParenthesis++;
+	 }
+"="	 { printf("EQUAL\n"); 
+	   numEquals++;
+	 } 
 .	 { printf("Invalid character detected.\n");
            return;  }
 %%

@@ -455,7 +455,11 @@ char *yytext;
 #line 1 "lexer.lex"
 #line 2 "lexer.lex"
 #include <stdio.h>
-#line 459 "lex.yy.c"
+int numIntegers = 0;
+int numOperators = 0;
+int numParenthesis = 0;
+int numEquals = 0;
+#line 463 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -637,9 +641,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 7 "lexer.lex"
+#line 11 "lexer.lex"
 
-#line 643 "lex.yy.c"
+#line 647 "lex.yy.c"
 
 	if ( !(yy_init) )
 		{
@@ -724,56 +728,72 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 8 "lexer.lex"
-{ printf("NUMBER: %s\n", yytext); }
+#line 12 "lexer.lex"
+{ printf("NUMBER: %s\n", yytext); 
+	   numIntegers++;
+	 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 9 "lexer.lex"
-{ printf("ADD\n"); }
+#line 15 "lexer.lex"
+{ printf("ADD\n"); 
+           numOperators++;
+	 }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 10 "lexer.lex"
-{ printf("SUB\n"); }
+#line 18 "lexer.lex"
+{ printf("SUB\n"); 
+	   numOperators++;
+	 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 11 "lexer.lex"
-{ printf("MULT\n"); }
+#line 21 "lexer.lex"
+{ printf("MULT\n"); 
+	   numOperators++;
+	 }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 12 "lexer.lex"
-{ printf("DIV\n"); }
+#line 24 "lexer.lex"
+{ printf("DIV\n"); 
+	   numOperators++;
+	 }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 13 "lexer.lex"
-{ printf("L_PAREN\n"); }
+#line 27 "lexer.lex"
+{ printf("L_PAREN\n"); 
+	   numParenthesis++;
+	 }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 14 "lexer.lex"
-{ printf("R_PAREN\n"); }
+#line 30 "lexer.lex"
+{ printf("R_PAREN\n"); 
+	   numParenthesis++;
+	 }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 15 "lexer.lex"
-{ printf("EQUAL\n"); } 
+#line 33 "lexer.lex"
+{ printf("EQUAL\n"); 
+	   numEquals++;
+	 } 
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 16 "lexer.lex"
+#line 36 "lexer.lex"
 { printf("Invalid character detected.\n");
            return;  }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 18 "lexer.lex"
+#line 38 "lexer.lex"
 ECHO;
 	YY_BREAK
-#line 777 "lex.yy.c"
+#line 797 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1767,7 +1787,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 18 "lexer.lex"
+#line 38 "lexer.lex"
 
 
 
@@ -1776,6 +1796,10 @@ int main (int argc, char *argv[]) {
   yyin = fopen(argv[1], "r"); // Open the first file after a.out
   yylex();
   fclose(yyin);
+  printf("Integers: %d\n", numIntegers);
+  printf("Operators: %d\n", numOperators);
+  printf("Parenthesis: %d\n", numParenthesis);
+  printf("Equals: %d\n", numEquals);
   printf("Quitting...\n");
 }
 

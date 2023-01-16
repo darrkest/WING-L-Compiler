@@ -33,11 +33,6 @@ ALPHA [a-z]
 "="	 { printf("EQUAL\n"); 
 	   numEquals++;
 	 } 
-"\n"	 { printf("Number of integers: %d\n", numIntegers);
-	   printf("Number of operators: %d\n", numOperators);
-	   printf("Number of parenthesis: %d\n", numParenthesis);
-	   printf("Number of equals: %d\n", numEquals); 
-	 }
 .	 { printf("Invalid character detected.\n");
            return;  }
 %%
@@ -47,5 +42,9 @@ int main (int argc, char *argv[]) {
   yyin = fopen(argv[1], "r"); // Open the first file after a.out
   yylex();
   fclose(yyin);
+  printf("Integers: %d\n", numIntegers);
+  printf("Operators: %d\n", numOperators);
+  printf("Parenthesis: %d\n", numParenthesis);
+  printf("Equals: %d\n", numEquals);
   printf("Quitting...\n");
 }

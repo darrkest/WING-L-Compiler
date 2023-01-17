@@ -19,7 +19,7 @@
 | If-then-else statements            | if(bool) elif(bool) else(bool)  |
 | Read and write statements          | read(str), write(str)           |
 | Comments                           | # this is a comment            |
-| Functions                          | [return type] [name]([args]){}  |
+| Functions                          | [return type] \[name]([args]){}  |
 
 **Comments would look like the following:** 
 

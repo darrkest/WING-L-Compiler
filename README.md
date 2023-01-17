@@ -23,6 +23,10 @@
 
 **Comments would look like the following:** 
 
+`
+int i = 0       # Assigning integer scalar variable i a value of 4 
+`
+
 **Valid identifier:**
 
 **Case sensitive?:**

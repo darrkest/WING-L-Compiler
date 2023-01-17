@@ -1,8 +1,11 @@
 # CS152 Project
 
 ## Phase 0: Language Specification
+
 **Experimental Programming Language Name:** 
+
 **Extension for Programs:**
+
 **Name of Compiler:**
 
 | Language Feature                   | Code Example         |
@@ -19,8 +22,11 @@
 | Functions                          |                      |
 
 **Comments would look like the following:**
+
 **Valid identifier:**
+
 **Case sensitive?:**
+
 **Whitespaces?:**
 
 | Symbol in Language | Token Name |

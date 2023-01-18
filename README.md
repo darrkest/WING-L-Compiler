@@ -46,3 +46,7 @@ x[3] = 5         # Assign value of 5 to the 4th element of array x
 | >                  | GREATER    |
 | ==                 | EQUALTO    |
 | !=                 | NOTEQUAL   |
+| if                 | IFBR       |
+| elif               | ELIFBR     |
+| else               | ELSEBR     |
+| while              | WLOOP      | 

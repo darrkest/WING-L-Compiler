@@ -57,3 +57,5 @@ x[3] = 5         # Assign value of 5 to the 4th element of array x
 | and                | AND        |
 | or                 | OR         |
 | ~                  | NOT        |
+| {                  | L_CURL     |
+| }                  | R_CURL     |

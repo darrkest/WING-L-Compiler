@@ -29,6 +29,8 @@ ALPHA_UPPER [A-Z]
 "and"    { printf("AND\n");} 
 "or"	 { printf("OR\n");}
 "while"  { printf("WLOOP\n");}
+"{"      { printf("L_CURL\n");}
+"}"      { printf("R_CURL\n");}
 .	 {}
 %%
 

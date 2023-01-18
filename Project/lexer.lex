@@ -6,29 +6,29 @@ DIGIT [0-9]
 ALPHA_LOWER [a-z]
 ALPHA_UPPER [A-Z]
 %%
-{DIGIT}+ { printf("NUMBER");}
-{ALPHA_LOWER} { printf("LOWERCASE");}
-{ALPHA_UPPER} { printf("UPPERCASE");}
-"int" 	 { printf("INTEGER");}
-"sym" 	 { printf("CHAR");}
-"+"	 { printf("PLUS");}
-"-"	 { printf("MINUS");}
-"*"	 { printf("MULT");}
-"/"	 { printf("DIV");}
-"("	 { printf("L_PAR");}
-")"	 { printf("R_PAR");}
-"="	 { printf("EQUAL");}
-"<" 	 { printf("LESSER");}
-">"	 { printf("GREATER");}
-"=="     { printf("EQUALTO");}
-"~" 	 { printf("NOT");}
-"~="	 { printf("NOTEQUAL");}
-"if"	 { printf("IFBR");}
-"elif" 	 { printf("ELIFBR");}
-"else"   { printf("ELSEBR");}
-"and"    { printf("AND");} 
-"or"	 { printf("OR");}
-"while"  { printf("WLOOP");}
+{DIGIT}+ { printf("NUMBER\n");}
+{ALPHA_LOWER} { printf("LOWERCASE\n");}
+{ALPHA_UPPER} { printf("UPPERCASE\n");}
+"int" 	 { printf("INTEGER\n");}
+"sym" 	 { printf("CHAR\n");}
+"+"	 { printf("PLUS\n");}
+"-"	 { printf("MINUS\n");}
+"*"	 { printf("MULT\n");}
+"/"	 { printf("DIV\n");}
+"("	 { printf("L_PAR\n");}
+")"	 { printf("R_PAR\n");}
+"="	 { printf("EQUAL\n");}
+"<" 	 { printf("LESSER\n");}
+">"	 { printf("GREATER\n");}
+"=="     { printf("EQUALTO\n");}
+"~" 	 { printf("NOT\n");}
+"~="	 { printf("NOTEQUAL\n");}
+"if"	 { printf("IFBR\n");}
+"elif" 	 { printf("ELIFBR\n");}
+"else"   { printf("ELSEBR\n");}
+"and"    { printf("AND\n");} 
+"or"	 { printf("OR\n");}
+"while"  { printf("WLOOP\n");}
 .	 {}
 %%
 

@@ -2,11 +2,11 @@
 
 ## Phase 0: Language Specification
 
-**Experimental Programming Language Name:** 
+**Experimental Programming Language Name:** WING-L
 
-**Extension for Programs:**
+**Extension for Programs:** Main.wing
 
-**Name of Compiler:**
+**Name of Compiler:** WING-LC
 
 | Language Feature                   | Code Example                    |
 | ---------------------------------- | ------------------------------- |
@@ -37,13 +37,12 @@ x[3] = 5         # Assign value of 5 to the 4th element of array x
 
 | Symbol in Language | Token Name |
 | ------------------ | ---------- |
-|                    |            |
-|                    |            |
-|                    |            |
-|                    |            |
-|                    |            |
-|                    |            |
-|                    |            |
-|                    |            |
-|                    |            |
-|                    |            |
+| int                | INTEGER    |
+| +                  | PLUS       |
+| -                  | MINUS      |
+| *                  | MULT       |
+| /                  | DIV        |
+| <                  | LESSER     |
+| >                  | GREATER    |
+| ==                 | EQUALTO    |
+| !=                 | NOTEQUAL   |

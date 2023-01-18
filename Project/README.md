@@ -42,6 +42,8 @@ x[3] = 5         # Assign value of 5 to the 4th element of array x
 | -                  | MINUS      |
 | *                  | MULT       |
 | /                  | DIV        |
+| (                  | L_PAR      |
+| )                  | R_PAR      |
 | <                  | LESSER     |
 | >                  | GREATER    |
 | ==                 | EQUALTO    |

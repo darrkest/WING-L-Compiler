@@ -3,16 +3,32 @@
 %}
 
 DIGIT [0-9]
-ALPHA [a-z]
+ALPHA_LOWER [a-z]
+ALPHA_UPPER [A-Z]
 %%
-{DIGIT}+ {}
-"+"	 {}
-"-"	 {}
-"*"	 {}
-"/"	 {}
-"("	 {}
-")"	 {}
-"="	 {} 
+{DIGIT}+ { printf("NUMBER");}
+{ALPHA_LOWER} { printf("LOWERCASE");}
+{ALPHA_UPPER} { printf("UPPERCASE");}
+"int" 	 { printf("INTEGER");}
+"sym" 	 { printf("CHAR");}
+"+"	 { printf("PLUS");}
+"-"	 { printf("MINUS");}
+"*"	 { printf("MULT");}
+"/"	 { printf("DIV");}
+"("	 { printf("L_PAR");}
+")"	 { printf("R_PAR");}
+"="	 { printf("EQUAL");}
+"<" 	 { printf("LESSER");}
+">"	 { printf("GREATER");}
+"=="     { printf("EQUALTO");}
+"~" 	 { printf("NOT");}
+"~="	 { printf("NOTEQUAL");}
+"if"	 { printf("IFBR");}
+"elif" 	 { printf("ELIFBR");}
+"else"   { printf("ELSEBR");}
+"and"    { printf("AND");} 
+"or"	 { printf("OR");}
+"while"  { printf("WLOOP");}
 .	 {}
 %%
 

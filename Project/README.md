@@ -16,7 +16,7 @@
 | Arithmetic operators               | 4 + 2, 5 - 1, 3 * 4, 4/0 etc    |
 | Relational operators               | x == y                          |
 | While loops                        | while (bool) {}                 |
-| If-then-else statements            | if(bool) elif(bool) else(bool)  |
+| If-then-else statements            | if(bool) {} elif(bool) {} else(bool) {} |
 | Read and write statements          | read(str), write(str)           |
 | Comments                           | # this is a comment            |
 | Functions                          | [return type] \[name]([args]){}  |

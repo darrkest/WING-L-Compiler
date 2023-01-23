@@ -3,12 +3,9 @@
 %}
 
 DIGIT [0-9]
-ALPHA_LOWER [a-z]
-ALPHA_UPPER [A-Z]
+ALPHA [a-zA-Z]
+IDENTIFIER {ALPHA}|({ALPHA}|"_")*
 %%
-{DIGIT}+ { printf("NUMBER\n");}
-{ALPHA_LOWER} { printf("LOWERCASE\n");}
-{ALPHA_UPPER} { printf("UPPERCASE\n");}
 "int" 	 { printf("INTEGER\n");}
 "sym" 	 { printf("CHAR\n");}
 "+"	 { printf("PLUS\n");}
@@ -29,9 +26,18 @@ ALPHA_UPPER [A-Z]
 "and"    { printf("AND\n");} 
 "or"	 { printf("OR\n");}
 "while"  { printf("WLOOP\n");}
+"read"   { printf("READ\n");}
+"write"  { printf("WRITE\n");}
+"funct"  { printf("FUNCTION\n");}
 "{"      { printf("L_CURL\n");}
 "}"      { printf("R_CURL\n");}
+"["      { printf("L_SQUARE\n");}
+"]"	 { printf("R_SQUARE\n");}
+
 .	 {}
+
+{DIGIT}+ { printf("NUMBER %s\n", yytext);}
+{IDENTIFIER} {printf("IDENTIFIER %s\n", yytext);}
 %%
 
 int main (int argc, char *argv[]) {

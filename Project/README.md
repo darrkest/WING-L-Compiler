@@ -14,12 +14,12 @@
 | One dimensional array of integers  | arr[x]                          |
 | Assignment statements              | x = 4                           |
 | Arithmetic operators               | 4 + 2, 5 - 1, 3 * 4, 4/0 etc    |
-| Relational operators               | x == y                          |
+| Relational operators               | x == y, x < y, x > y, x ~= y etc |
 | While loops                        | while (args) {}                 |
-| If-then-else statements            | if(args) {} elif(args) {} else(args) {} |
-| Read and write statements          | read(args), write(args)           |
-| Comments                           | # this is a comment            |
-| Functions                          | [return type] \[name]([args]){}  |
+| If-then-else statements            | if(args){} elif(args){} else(args){} |
+| Read and write statements          | read(args), write(args)         |
+| Comments                           | # this is a comment             |
+| Functions                          | funct \[name](args) {}          |
 
 **Comments would look like the following:** 
 
@@ -38,6 +38,7 @@ x[3] = 5         # Assign value of 5 to the 4th element of array x
 | Symbol in Language | Token Name |
 | ------------------ | ---------- |
 | {DIGIT}+           | NUMBER     |
+| {IDENTIFIER}       | IDENTIFIER |
 | int                | INTEGER    |
 | sym                | CHAR       |
 | +                  | PLUS       |
@@ -59,3 +60,8 @@ x[3] = 5         # Assign value of 5 to the 4th element of array x
 | ~                  | NOT        |
 | {                  | L_CURL     |
 | }                  | R_CURL     |
+| [                  | L_SQUARE   |
+| ]                  | R_SQUARE   |
+| read               | READ       |
+| write              | WRITE      |
+| funct              | FUNCTION   |

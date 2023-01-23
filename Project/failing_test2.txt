@@ -1,0 +1,10 @@
+funct main {
+	int array_of_numbers[10]
+	int iterate$ = 0
+	int expponentially_increase = 1
+	while (iterate$ < 10) {
+		array_of_numbers[i] = exponentially_increase
+		exponentially_increase = exponentially_increase * 2
+		write(exponentially_increase)
+	}
+}

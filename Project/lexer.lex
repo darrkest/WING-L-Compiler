@@ -34,6 +34,8 @@ IDENTIFIER {ALPHA}|{ALPHA}(_|{ALPHA})*
 "["      { printf("L_SQUARE\n");}
 "]"	 { printf("R_SQUARE\n");}
 " "	 { }
+"\t"	 { }
+"\n"	 { }
 
 "_"{IDENTIFIER} { printf("Error: Identifier can't begin with an underscore.\n"); exit(0);}
 {DIGIT}+ { printf("NUMBER %s\n", yytext);}

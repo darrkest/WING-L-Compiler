@@ -4,7 +4,7 @@
 
 DIGIT [0-9]
 ALPHA [a-zA-Z]
-IDENTIFIER {ALPHA}|({ALPHA}|"_")*
+IDENTIFIER {ALPHA}|{ALPHA}(_|{ALPHA})*
 %%
 "int" 	 { printf("INTEGER\n");}
 "sym" 	 { printf("CHAR\n");}
@@ -33,11 +33,14 @@ IDENTIFIER {ALPHA}|({ALPHA}|"_")*
 "}"      { printf("R_CURL\n");}
 "["      { printf("L_SQUARE\n");}
 "]"	 { printf("R_SQUARE\n");}
+" "	 { }
 
-.	 {}
-
+"_"{IDENTIFIER} { printf("Error: Identifier can't begin with an underscore.\n"); exit(0);}
 {DIGIT}+ { printf("NUMBER %s\n", yytext);}
-{IDENTIFIER} {printf("IDENTIFIER %s\n", yytext);}
+{IDENTIFIER} { printf("IDENTIFIER %s\n", yytext);}
+
+.        { printf("Error: Unidentified symbol detected.\n"); exit(0);}
+
 %%
 
 int main (int argc, char *argv[]) {

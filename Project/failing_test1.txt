@@ -1,0 +1,6 @@
+funct main {
+	int first_number = 100
+	int _secondnumber = 50
+	int _result = first_number + _secondnumber
+	write(_result)
+}

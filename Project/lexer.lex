@@ -33,6 +33,8 @@ IDENTIFIER {ALPHA}|{ALPHA}(_|{ALPHA})*
 "}"      { printf("R_CURL\n");}
 "["      { printf("L_SQUARE\n");}
 "]"	 { printf("R_SQUARE\n");}
+
+"#"(.)*	 { }
 " "	 { }
 "\t"	 { }
 "\n"	 { }

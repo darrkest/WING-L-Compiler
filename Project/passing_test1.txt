@@ -1,6 +1,6 @@
 funct main {
 	int a = 100
 	int b = 50
-	int c = a + b
-	write(c)
+	int c = a + b	# Store result in c
+	write(c)	
 }

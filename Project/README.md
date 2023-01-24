@@ -29,7 +29,7 @@ int x[10]        # Create a one dimensional array of integers of length 10
 x[3] = 5         # Assign value of 5 to the 4th element of array x
 ```
 
-**Valid identifier:** Letters and underscores
+**Valid identifier:** Letters and underscores, but can't start with an underscore
 
 **Case sensitive?:** Yes
 

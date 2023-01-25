@@ -1,49 +1,51 @@
 %{
 #include <stdio.h>
+int errorPosition = 1;
+int errorLine = 1;
 %}
 
 DIGIT [0-9]
 ALPHA [a-zA-Z]
 IDENTIFIER {ALPHA}|{ALPHA}(_|{ALPHA})*
 %%
-"int" 	 { printf("INTEGER\n");}
-"sym" 	 { printf("CHAR\n");}
-"+"	 { printf("PLUS\n");}
-"-"	 { printf("MINUS\n");}
-"*"	 { printf("MULT\n");}
-"/"	 { printf("DIV\n");}
-"("	 { printf("L_PAR\n");}
-")"	 { printf("R_PAR\n");}
-"="	 { printf("EQUAL\n");}
-"<" 	 { printf("LESSER\n");}
-">"	 { printf("GREATER\n");}
-"=="     { printf("EQUALTO\n");}
-"~" 	 { printf("NOT\n");}
-"~="	 { printf("NOTEQUAL\n");}
-"if"	 { printf("IFBR\n");}
-"elif" 	 { printf("ELIFBR\n");}
-"else"   { printf("ELSEBR\n");}
-"and"    { printf("AND\n");} 
-"or"	 { printf("OR\n");}
-"while"  { printf("WLOOP\n");}
-"read"   { printf("READ\n");}
-"write"  { printf("WRITE\n");}
-"funct"  { printf("FUNCTION\n");}
-"{"      { printf("L_CURL\n");}
-"}"      { printf("R_CURL\n");}
-"["      { printf("L_SQUARE\n");}
-"]"	 { printf("R_SQUARE\n");}
+"int" 	 { printf("INTEGER\n"); errorPosition += yyleng;}
+"sym" 	 { printf("CHAR\n"); errorPosition += yyleng;}
+"+"	 { printf("PLUS\n"); errorPosition += yyleng;}
+"-"	 { printf("MINUS\n"); errorPosition += yyleng;}
+"*"	 { printf("MULT\n"); errorPosition += yyleng;}
+"/"	 { printf("DIV\n"); errorPosition += yyleng;}
+"("	 { printf("L_PAR\n"); errorPosition += yyleng;}
+")"	 { printf("R_PAR\n"); errorPosition += yyleng;}
+"="	 { printf("EQUAL\n"); errorPosition += yyleng;}
+"<" 	 { printf("LESSER\n"); errorPosition += yyleng;}
+">"	 { printf("GREATER\n"); errorPosition += yyleng;}
+"=="     { printf("EQUALTO\n"); errorPosition += yyleng;}
+"~" 	 { printf("NOT\n"); errorPosition += yyleng;}
+"~="	 { printf("NOTEQUAL\n"); errorPosition += yyleng;}
+"if"	 { printf("IFBR\n"); errorPosition += yyleng;}
+"elif" 	 { printf("ELIFBR\n"); errorPosition += yyleng;}
+"else"   { printf("ELSEBR\n"); errorPosition += yyleng;}
+"and"    { printf("AND\n"); errorPosition += yyleng;} 
+"or"	 { printf("OR\n"); errorPosition += yyleng;}
+"while"  { printf("WLOOP\n"); errorPosition += yyleng;}
+"read"   { printf("READ\n"); errorPosition += yyleng;}
+"write"  { printf("WRITE\n"); errorPosition += yyleng;}
+"funct"  { printf("FUNCTION\n"); errorPosition += yyleng;}
+"{"      { printf("L_CURL\n"); errorPosition += yyleng;}
+"}"      { printf("R_CURL\n"); errorPosition += yyleng;}
+"["      { printf("L_SQUARE\n"); errorPosition += yyleng;}
+"]"	 { printf("R_SQUARE\n"); errorPosition += yyleng;}
 
 "#"(.)*	 { }
-" "	 { }
-"\t"	 { }
-"\n"	 { }
+" "	 { errorPosition += yyleng; }
+"\t"	 { errorPosition += yyleng; }
+"\n"	 { errorPosition = 1; ++errorLine; }
 
-"_"{IDENTIFIER} { printf("Error: Identifier can't begin with an underscore.\n"); exit(0);}
+"_"{IDENTIFIER} { printf("Error: Identifier can't begin with an underscore. Line %d, position %d\n", errorLine, errorPosition); exit(0);}
 {DIGIT}+ { printf("NUMBER %s\n", yytext);}
 {IDENTIFIER} { printf("IDENTIFIER %s\n", yytext);}
 
-.        { printf("Error: Unidentified symbol detected.\n"); exit(0);}
+.        { printf("Error: Unidentified symbol \"%s\" detected. Line %d, position %d\n", yytext, errorLine, errorPosition); exit(0);}
 
 %%
 

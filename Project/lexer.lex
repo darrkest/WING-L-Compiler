@@ -42,8 +42,8 @@ IDENTIFIER {ALPHA}|{ALPHA}(_|{ALPHA})*
 "\n"	 { errorPosition = 1; ++errorLine; }
 
 "_"{IDENTIFIER} { printf("Error: Identifier can't begin with an underscore. Line %d, position %d\n", errorLine, errorPosition); exit(0);}
-{DIGIT}+ { printf("NUMBER %s\n", yytext);}
-{IDENTIFIER} { printf("IDENTIFIER %s\n", yytext);}
+{DIGIT}+ { printf("NUMBER %s\n", yytext); errorPosition++;}
+{IDENTIFIER} { printf("IDENTIFIER %s\n", yytext); errorPosition++;}
 
 .        { printf("Error: Unidentified symbol \"%s\" detected. Line %d, position %d\n", yytext, errorLine, errorPosition); exit(0);}
 

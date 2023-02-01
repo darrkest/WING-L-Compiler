@@ -14,12 +14,12 @@
 | One dimensional array of integers  | arr[x]                          |
 | Assignment statements              | x = 4                           |
 | Arithmetic operators               | 4 + 2, 5 - 1, 3 * 4, 4/0 etc    |
-| Relational operators               | x == y, x < y, x > y, x ~= y etc |
+| Relational operators               | x == y, x < y, x > y, x ~= y etc|
 | While loops                        | while (args) {}                 |
-| If-then-else statements            | if(args){} elif(args){} else(args){} |
+| If-then-else statements            | if(x){} elif(y){} else{}        |
 | Read and write statements          | read(args), write(args)         |
 | Comments                           | # this is a comment             |
-| Functions                          | funct \[name](args) {}          |
+| Functions                          | funct foo(int a) {}             |
 
 **Comments would look like the following:** 
 

@@ -9,32 +9,15 @@ int numEquals = 0;
 DIGIT [0-9]
 ALPHA [a-z]
 %%
-{DIGIT}+ { printf("NUMBER: %s\n", yytext); 
-	   numIntegers++;
-	 }
-"+"	 { printf("ADD\n"); 
-           numOperators++;
-	 }
-"-"	 { printf("SUB\n"); 
-	   numOperators++;
-	 }
-"*"	 { printf("MULT\n"); 
-	   numOperators++;
-	 }
-"/"	 { printf("DIV\n"); 
-	   numOperators++;
-	 }
-"("	 { printf("L_PAREN\n"); 
-	   numParenthesis++;
-	 }
-")"	 { printf("R_PAREN\n"); 
-	   numParenthesis++;
-	 }
-"="	 { printf("EQUAL\n"); 
-	   numEquals++;
-	 } 
-.	 { printf("Invalid character detected.\n");
-           return;  }
+{DIGIT}+ { numIntegers++; return NUMBER;}
+"+"	 {  numOperators++; return ADD;}
+"-"	 { numOperators++; return SUB;}
+"*"	 { numOperators++; return MULT;}
+"/"	 { numOperators++; return DIV;}
+"("	 { numParenthesis++; return L_PAREN;}
+")"	 { numParenthesis++; return R_PAREN;}
+"="	 { numEquals++; return EQUAL;} 
+.	 { printf("Invalid character detected.\n"); return;}
 %%
 
 int main (int argc, char *argv[]) {

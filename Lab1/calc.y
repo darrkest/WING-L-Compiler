@@ -4,7 +4,7 @@ extern FILE* yyin;
 %}
 
 %start prog_start
-%token 
+%token NUMBER ADD SUB MULT DIV L_PAREN R_PAREN EQUAL
 
 %%
 

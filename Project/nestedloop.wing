@@ -1,0 +1,14 @@
+funct main() {
+  int i
+  int j
+  
+  while (i < 2) {
+    j = 1
+    while j (<= 3) {
+      write(j)
+      j = j + 1
+    }
+    
+    i = i + 1
+  }
+}

@@ -1,0 +1,16 @@
+funct main {
+    int num
+    read(num)
+    factorial (num)
+}
+
+funct factorial (int k)
+{
+    int i = 1
+    int fac = 1
+    while (i <= k){
+        fac = fac * i
+        i = i + 1
+    }
+    write("The Factorial of " k " is " fac)
+}

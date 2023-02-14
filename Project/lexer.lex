@@ -49,6 +49,7 @@ IDENTIFIER {ALPHA}|{ALPHA}(_|{ALPHA})*
 
 %%
 
+/*
 int main (int argc, char *argv[]) {
   printf("Ctrl+D to quit.\n"); 
   yyin = fopen(argv[1], "r"); // Open the first file after a.out
@@ -56,3 +57,4 @@ int main (int argc, char *argv[]) {
   fclose(yyin);
   printf("Quitting...\n");
 }
+*/

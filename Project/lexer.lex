@@ -1,4 +1,5 @@
 %{
+#include "y.tab.h"
 #include <stdio.h>
 int errorPosition = 1;
 int errorLine = 1;

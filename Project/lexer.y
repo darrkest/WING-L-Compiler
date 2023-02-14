@@ -31,6 +31,9 @@ argument: %empty /* epsilon */ {printf("argument -> epsilon\n");}
         | INTEGER IDENTIFIER L_SQUARE NUMBER R_SQUARE {printf("argument -> INTEGER IDENTIFIER L_SQUARE NUMBER R_SQUARE\n");}
 	;
 
+statements: %empty /* epsilon */ {printf("statements -> epsilon\n");}
+	;
+
 %%
 
 int main (int argc, char *argv[]) {

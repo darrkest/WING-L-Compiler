@@ -8,7 +8,7 @@ int yyerror(char *error){
 %}
 
 %start prog_start
-%token INTEGER IDENTIFIER NUMBER CHAR PLUS MINUS MULT DIV L_PAR R_PAR EQUAL LESSER GREATER EQUALTO NOT NOTEQUAL IFBR ELIFBR ELSEBR AND OR WLOOP READ WRITE FUNCTION L_CURL R_CURL L_SQUARE R_SQUARE
+%token INTEGER IDENTIFIER NUMBER CHAR PLUS MINUS MULT DIV L_PAR R_PAR EQUAL LESSER GREATER EQUALTO NOT NOTEQUAL IFBR ELIFBR ELSEBR AND OR WLOOP READ WRITE FUNCTION L_CURL R_CURL L_SQUARE R_SQUARE COMMA
 
 %%
 prog_start: %empty /* epsilon */ {printf("prog_start->epsilon\n");}
@@ -19,7 +19,7 @@ functions: function {printf("functions -> function\n");}
 	| function functions {printf("functions -> function functions\n");}
 	;
 
-function: INTEGER IDENTIFIER LPAREN arguments RPAREN LBRACKET statements RBRACKET {printf("function -> INTEGER IDENTIFIER LPAREN arguments RPAREN LBRACKET statements RBRACKET\n");}
+function: INTEGER IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {printf("function -> INTEGER IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL\n");}
 	;
 
 arguments: argument {printf("arguments -> argument\n");}

@@ -4,4 +4,4 @@ all:
         gcc -o parser lex.yy.c y.tab.c -lfl
 
 clean:
-        rm -f parser ledx.yy.c y.tab.c
+        rm -f parser lex.yy.c y.tab.c

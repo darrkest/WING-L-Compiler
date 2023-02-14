@@ -34,7 +34,8 @@ IDENTIFIER {ALPHA}|{ALPHA}(_|{ALPHA})*
 "{"      { errorPosition += yyleng; return L_CURL;}
 "}"      { errorPosition += yyleng; return R_CURL;}
 "["      { errorPosition += yyleng; return L_SQUARE;}
-"]"	 { errorPosition += yyleng; reteurn R_SQUARE;}
+"]"	 { errorPosition += yyleng; return R_SQUARE;}
+","	 { errorPosition += yyleng; return COMMA;}
 
 "#"(.)*	 { }
 " "	 { errorPosition += yyleng; }
@@ -42,8 +43,8 @@ IDENTIFIER {ALPHA}|{ALPHA}(_|{ALPHA})*
 "\n"	 { errorPosition = 1; ++errorLine; }
 
 "_"{IDENTIFIER} { printf("Error: Identifier can't begin with an underscore. Line %d, position %d\n", errorLine, errorPosition); exit(0);}
-{DIGIT}+ { printf("NUMBER %s\n", yytext); errorPosition++;}
-{IDENTIFIER} { printf("IDENTIFIER %s\n", yytext); errorPosition++;}
+{DIGIT}+ { errorPosition++; return NUMBER;}
+{IDENTIFIER} { errorPosition++; return IDENTIFIER;}
 
 .        { printf("Error: Unidentified symbol \"%s\" detected. Line %d, position %d\n", yytext, errorLine, errorPosition); exit(0);}
 

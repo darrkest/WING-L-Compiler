@@ -8,41 +8,63 @@ int yyerror(char *error){
 %}
 
 %start prog_start
-%token INTEGER IDENTIFIER NUMBER CHAR PLUS MINUS MULT DIV L_PAR R_PAR EQUAL LESSER GREATER EQUALTO NOT NOTEQUAL IFBR ELIFBR ELSEBR AND OR WLOOP READ WRITE FUNCTION L_CURL R_CURL L_SQUARE R_SQUARE COMMA
+%token INTEGER IDENTIFIER NUMBER CHAR PLUS MINUS MULT DIV L_PAR R_PAR EQUAL LESSER GREATER EQUALTO NOT NOTEQUAL IFBR ELIFBR ELSEBR AND OR WLOOP READ WRITE FUNCTION L_CURL R_CURL L_SQUARE R_SQUARE COMMA RETURN
 
 %%
 prog_start: %empty /* epsilon */ {printf("prog_start->epsilon\n");}
 	| functions {printf("prog_start -> functions\n");}
-	;
 
 functions: function {printf("functions -> function\n");}
 	| function functions {printf("functions -> function functions\n");}
-	;
 
 function: FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {printf("function -> FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL\n");}
 	| FUNCTION IDENTIFIER L_CURL statements R_CURL {printf("function -> FUNCTION IDENTIFIER L_CURL statements R_CURL\n");}
-	;
 
 arguments: argument {printf("arguments -> argument\n");}
 	| argument COMMA arguments {printf("arguments -> COMMA arguments\n");}
-	;
 
 argument: %empty /* epsilon */ {printf("argument -> epsilon\n");}
 	| INTEGER IDENTIFIER {printf("argument -> INTEGER IDENTIFIER\n");}
         | INTEGER IDENTIFIER L_SQUARE NUMBER R_SQUARE {printf("argument -> INTEGER IDENTIFIER L_SQUARE NUMBER R_SQUARE\n");}
-	;
 
 statements: %empty /* epsilon */ {printf("statements -> epsilon\n");}
-	;
+	| statement statements {printf("statements -> statement statements\n");}
 
 statement: declaration {printf("statement -> declaration\n");}
         | function_call {printf("statement -> function_call\n");}
+	| assignment {printf("statement -> assignment\n");}
+	| read_call   {printf("statement -> read_call\n");}
+	| write_call {printf("statement -> write_call\n");}
+	| return_call {printf("statement -> return_call\n");}
+	| while_call {printf("statement -> while_call\n");}
+	| if_call {printf("statement -> if_call\n");}
+	| elif_call {printf("statement -> elif_call\n");}
+	| else_call {printf("statement -> else_call\n");}
 	
-Declaration: INTEGER IDENTIFIER {printf("declaration -> INTEGER IDENTIFIER\n");}
+declaration: INTEGER IDENTIFIER {printf("declaration -> INTEGER IDENTIFIER\n");}
 
-function_call: IDENTIFIER L_PAR args R_PAR {printf("function_call -> IDENTIFIER L_PAR args R_PAR\n");}
+function_call: IDENTIFIER L_PAR arguments R_PAR {printf("function_call -> IDENTIFIER L_PAR args R_PAR\n");}
 
-args: %empty {printf("args -> epsilon\n");}
+assignment: IDENTIFIER EQUAL NUMBER {printf("assignment -> IDENTIFIER EQUAL NUMBER\n");}
+	| IDENTIFIER EQUAL IDENTIFIER {printf("assignment -> IDENTIFIER EQUAL IDENTIFIER\n");}
+
+read_call: READ L_PAR IDENTIFIER R_PAR {printf("read_call -> READ L_PAR IDENTIFIER R_PAR\n");}
+
+write_call: WRITE L_PAR IDENTIFIER R_PAR {printf("write_call -> WRITE L_PAR IDENTIFIER R_PAR\n");}
+
+return_call: RETURN IDENTIFIER {printf("return_call -> RETURN IDENTIFIER\n");}
+	| RETURN NUMBER { printf("return_call -> RETURN NUMBER\n");}
+
+while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL { printf("while_call -> WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL\n");}
+
+if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL {printf("if_call -> IFBR L_PAR comparison R_PAR L_CURL statements R_CURL\n");}
+
+elif_call: ELIFBR L_PAR comparison R_PAR L_CURL statements R_CURL {printf("elif_call -> ELIFBR L_PAR comparison R_PAR L_CURL statements R_CURL\n");}
+
+else_call: ELSEBR L_PAR comparison R_PAR L_CURL statements R_CURL {printf("else_call -> ELSEIF L_PAR comparison R_PAR L_CURL statements R_CURL\n");}
+
+comparison: 
+
 %%
 
 int main (int argc, char *argv[]) {

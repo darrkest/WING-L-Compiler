@@ -26,6 +26,7 @@ arguments: argument {printf("arguments -> argument\n");}
 argument: %empty /* epsilon */ {printf("argument -> epsilon\n");}
 	| INTEGER IDENTIFIER {printf("argument -> INTEGER IDENTIFIER\n");}
         | INTEGER IDENTIFIER L_SQUARE NUMBER R_SQUARE {printf("argument -> INTEGER IDENTIFIER L_SQUARE NUMBER R_SQUARE\n");}
+	| term {printf("argument -> term\n");}
 
 statements: %empty /* epsilon */ {printf("statements -> epsilon\n");}
 	| statement statements {printf("statements -> statement statements\n");}
@@ -43,11 +44,13 @@ statement: declaration {printf("statement -> declaration\n");}
 	
 declaration: INTEGER IDENTIFIER {printf("declaration -> INTEGER IDENTIFIER\n");}
 
-function_call: IDENTIFIER L_PAR arguments R_PAR {printf("function_call -> IDENTIFIER L_PAR args R_PAR\n");}
+function_call: IDENTIFIER L_PAR arguments R_PAR {printf("function_call -> IDENTIFIER L_PAR arguments R_PAR\n");}
+	| IDENTIFIER L_PAR operation R_PAR { printf("function_call -> IDENTIFIER L_PAR operation R_PAR\n");}
 
 assignment: IDENTIFIER EQUAL NUMBER {printf("assignment -> IDENTIFIER EQUAL NUMBER\n");}
 	| IDENTIFIER EQUAL IDENTIFIER {printf("assignment -> IDENTIFIER EQUAL IDENTIFIER\n");}
 	| IDENTIFIER EQUAL operation {printf("assignment -> IDENTIFIER EQUAL operation\n");}
+	| IDENTIFIER EQUAL function_call{printf("assignment -> IDENTIFIER EQUAL function_call\n");}
 
 read_call: READ L_PAR IDENTIFIER R_PAR {printf("read_call -> READ L_PAR IDENTIFIER R_PAR\n");}
 
@@ -55,6 +58,7 @@ write_call: WRITE L_PAR IDENTIFIER R_PAR {printf("write_call -> WRITE L_PAR IDEN
 
 return_call: RETURN IDENTIFIER {printf("return_call -> RETURN IDENTIFIER\n");}
 	| RETURN NUMBER { printf("return_call -> RETURN NUMBER\n");}
+	| RETURN operation { printf("return_call -> RETURN operation\n");}
 
 while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL { printf("while_call -> WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL\n");}
 
@@ -75,6 +79,7 @@ operation: term addop term { printf("operation -> term addop term\n");}
 term: %empty /*epsilon*/ {printf("term -> epsilon\n");}
 	| IDENTIFIER {printf("term -> IDENTIFIER\n");}
 	| NUMBER {printf("term -> NUMBER\n");}
+	| function_call{printf("term -> function_call\n");}
 
 addop: PLUS { printf("addop -> PLUS\n");}
 	| MINUS {printf("addop -> MINUS\n");}

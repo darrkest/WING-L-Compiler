@@ -1,15 +1,7 @@
-funct main {
-	int x
-	while (x < 10) {
-		if (x > 5) {
-		}
-		elif (x < 6) {
-		}
-		else {
-		}
-	}
+funct fibonacci(int k) {
+   if (k < 2) {
+        return 1
+   }
+   return fibonacci(k-2) + fibonacci(k-1) 
 }
 
-funct another(int x) {
-
-}

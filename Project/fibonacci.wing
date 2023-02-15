@@ -5,13 +5,13 @@ funct fibonacci(int k) {
    return fibonacci(k-1) + fibonacci(k-2)
 }
 
-funct main() {
+funct main {
    int n
    int fib_n
 
    read(n)
-   fib_n = fibonacci(n)
-   write (fib_n)
+   fib_n = fibonacci(n) 
+   write(fib_n)
 
    return 0
 }

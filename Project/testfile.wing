@@ -1,5 +1,13 @@
 funct main {
-
+	int x
+	while (x < 10) {
+		if (x > 5) {
+		}
+		elif (x < 6) {
+		}
+		else {
+		}
+	}
 }
 
 funct another(int x) {

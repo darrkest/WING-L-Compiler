@@ -61,12 +61,14 @@ if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL {printf("if_call -
 
 elif_call: ELIFBR L_PAR comparison R_PAR L_CURL statements R_CURL {printf("elif_call -> ELIFBR L_PAR comparison R_PAR L_CURL statements R_CURL\n");}
 
-else_call: ELSEBR L_PAR comparison R_PAR L_CURL statements R_CURL {printf("else_call -> ELSEIF L_PAR comparison R_PAR L_CURL statements R_CURL\n");}
+else_call: ELSEBR L_CURL statements R_CURL {printf("else_call -> ELSEIF L_CURL statements R_CURL\n");}
 
 comparison: IDENTIFIER LESSER IDENTIFIER { printf("comparison -> IDENTIFIER LESSER IDENTIFIER\n");}
 	| IDENTIFIER LESSER NUMBER { printf("comparison -> IDENTIFIER LESSER NUMBER\n");}
 	| IDENTIFIER GREATER IDENTIFIER { printf("comparison -> IDENTIFIER GREATER IDENTIFIER\n");}
 	| IDENTIFIER GREATER NUMBER { printf("comparison -> IDENTIFIER GREATER NUMBER\n");}
+
+
 
 %%
 

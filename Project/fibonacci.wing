@@ -7,7 +7,7 @@ func fibonacci(int k) {
 
 func main() {
    int n;
-   int fib-n;
+   int fib_n;
 
    read (n);
    fib_n = fibonacci(n);

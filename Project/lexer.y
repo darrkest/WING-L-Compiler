@@ -20,6 +20,7 @@ functions: function {printf("functions -> function\n");}
 	;
 
 function: INTEGER IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {printf("function -> INTEGER IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL\n");}
+	| INTEGER IDENTIFIER L_CURL statements R_CURL {printf("function -> INTEGER IDENTIFIER L_CURL statements R_CURL\n");}
 	;
 
 arguments: argument {printf("arguments -> argument\n");}
@@ -38,8 +39,16 @@ statements: %empty /* epsilon */ {printf("statements -> epsilon\n");}
 
 int main (int argc, char *argv[]) {
   printf("Ctrl+D to quit.\n");
-  yyin = fopen(argv[1], "r"); // Open the first file after a.out
-  yylex();
-  fclose(yyin);
+  if (argc >= 2) {
+	yyin = fopen(argv[1], "r");
+	if (yyin == NULL) {
+		yyin = stdin;
+	}
+  }
+  else {
+	yyin = stdin;
+  }
+  yyparse();
+  return 1;
   printf("Quitting...\n");
 }

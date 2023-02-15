@@ -47,6 +47,7 @@ function_call: IDENTIFIER L_PAR arguments R_PAR {printf("function_call -> IDENTI
 
 assignment: IDENTIFIER EQUAL NUMBER {printf("assignment -> IDENTIFIER EQUAL NUMBER\n");}
 	| IDENTIFIER EQUAL IDENTIFIER {printf("assignment -> IDENTIFIER EQUAL IDENTIFIER\n");}
+	| IDENTIFIER EQUAL operation {printf("assignment -> IDENTIFIER EQUAL operation\n");}
 
 read_call: READ L_PAR IDENTIFIER R_PAR {printf("read_call -> READ L_PAR IDENTIFIER R_PAR\n");}
 
@@ -68,7 +69,12 @@ comparison: IDENTIFIER LESSER IDENTIFIER { printf("comparison -> IDENTIFIER LESS
 	| IDENTIFIER GREATER IDENTIFIER { printf("comparison -> IDENTIFIER GREATER IDENTIFIER\n");}
 	| IDENTIFIER GREATER NUMBER { printf("comparison -> IDENTIFIER GREATER NUMBER\n");}
 
+operation: term addop term { printf("operation -> term addop term\n");}
+	| term mulop term { printf("operation -> term mulop term\n");}
 
+term: %empty /*epsilon*/ {printf("term -> epsilon\n");}
+	| IDENTIFIER {printf("term -> IDENTIFIER\n");}
+	| NUMBER {printf("term -> NUMBER\n");}
 
 %%
 

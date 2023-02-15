@@ -19,8 +19,8 @@ functions: function {printf("functions -> function\n");}
 	| function functions {printf("functions -> function functions\n");}
 	;
 
-function: INTEGER IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {printf("function -> INTEGER IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL\n");}
-	| INTEGER IDENTIFIER L_CURL statements R_CURL {printf("function -> INTEGER IDENTIFIER L_CURL statements R_CURL\n");}
+function: FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {printf("function -> FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL\n");}
+	| FUNCTION IDENTIFIER L_CURL statements R_CURL {printf("function -> FUNCTION IDENTIFIER L_CURL statements R_CURL\n");}
 	;
 
 arguments: argument {printf("arguments -> argument\n");}

@@ -1,11 +1,11 @@
-func fibonacci(int k) {
+funct fibonacci(int k) {
    if (k <= 1) {
         return 1;
    }
    return fibonacci(k-1) + fibonacci(k-2);
 }
 
-func main() {
+funct main() {
    int n;
    int fib_n;
 

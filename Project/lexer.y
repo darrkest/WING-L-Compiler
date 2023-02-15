@@ -76,6 +76,12 @@ term: %empty /*epsilon*/ {printf("term -> epsilon\n");}
 	| IDENTIFIER {printf("term -> IDENTIFIER\n");}
 	| NUMBER {printf("term -> NUMBER\n");}
 
+addop: PLUS { printf("addop -> PLUS\n");}
+	| MINUS {printf("addop -> MINUS\n");}
+
+mulop: MULT { printf("mulop -> MULT\n");}
+	| DIV { printf("mulop -> DIV\n");}
+
 %%
 
 int main (int argc, char *argv[]) {

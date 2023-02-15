@@ -1,5 +1,5 @@
 funct fibonacci(int k) {
-   if (k <= 1) {
+   if (k < 2) {
         return 1;
    }
    return fibonacci(k-1) + fibonacci(k-2);

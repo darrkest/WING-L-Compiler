@@ -35,6 +35,14 @@ argument: %empty /* epsilon */ {printf("argument -> epsilon\n");}
 statements: %empty /* epsilon */ {printf("statements -> epsilon\n");}
 	;
 
+statement: declaration {printf("statement -> declaration\n");}
+        | function_call {printf("statement -> function_call\n");}
+	
+Declaration: INTEGER IDENTIFIER {printf("declaration -> INTEGER IDENTIFIER\n");}
+
+function_call: IDENTIFIER L_PAR args R_PAR {printf("function_call -> IDENTIFIER L_PAR args R_PAR\n");}
+
+args: %empty {printf("args -> epsilon\n");}
 %%
 
 int main (int argc, char *argv[]) {

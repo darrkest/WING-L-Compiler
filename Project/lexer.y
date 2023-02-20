@@ -47,10 +47,8 @@ declaration: INTEGER IDENTIFIER {printf("declaration -> INTEGER IDENTIFIER\n");}
 function_call: IDENTIFIER L_PAR arguments R_PAR {printf("function_call -> IDENTIFIER L_PAR arguments R_PAR\n");}
 	| IDENTIFIER L_PAR operation R_PAR { printf("function_call -> IDENTIFIER L_PAR operation R_PAR\n");}
 
-assignment: IDENTIFIER EQUAL NUMBER {printf("assignment -> IDENTIFIER EQUAL NUMBER\n");}
-	| IDENTIFIER EQUAL IDENTIFIER {printf("assignment -> IDENTIFIER EQUAL IDENTIFIER\n");}
+assignment: IDENTIFIER EQUAL term {printf("assignment -> IDENTIFIER EQUAL term\n");}
 	| IDENTIFIER EQUAL operation {printf("assignment -> IDENTIFIER EQUAL operation\n");}
-	| IDENTIFIER EQUAL function_call{printf("assignment -> IDENTIFIER EQUAL function_call\n");}
 
 read_call: READ L_PAR IDENTIFIER R_PAR {printf("read_call -> READ L_PAR IDENTIFIER R_PAR\n");}
 
@@ -62,17 +60,17 @@ return_call: RETURN IDENTIFIER {printf("return_call -> RETURN IDENTIFIER\n");}
 
 while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL { printf("while_call -> WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL\n");}
 
-if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL {printf("if_call -> IFBR L_PAR comparison R_PAR L_CURL statements R_CURL\n");}
+if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call else_call {printf("if_call -> IFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call else_call\n");}
 
-elif_call: ELIFBR L_PAR comparison R_PAR L_CURL statements R_CURL {printf("elif_call -> ELIFBR L_PAR comparison R_PAR L_CURL statements R_CURL\n");}
+elif_call: %empty /*epsilon*/ {printf("elif_call -> epsilon\n");}
+	| ELIFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call {printf("elif_call -> ELIFBR L_PAR comparison R_PAR L_CURL statements R_CURL\n");}
 
-else_call: ELSEBR L_CURL statements R_CURL {printf("else_call -> ELSEIF L_CURL statements R_CURL\n");}
+else_call: %empty /*epsilon*/ {printf("else_call -> epsilon\n");}
+	| ELSEBR L_CURL statements R_CURL {printf("else_call -> ELSEIF L_CURL statements R_CURL\n");}
 
-comparison: IDENTIFIER LESSER IDENTIFIER { printf("comparison -> IDENTIFIER LESSER IDENTIFIER\n");}
-	| IDENTIFIER LESSER NUMBER { printf("comparison -> IDENTIFIER LESSER NUMBER\n");}
-	| IDENTIFIER GREATER IDENTIFIER { printf("comparison -> IDENTIFIER GREATER IDENTIFIER\n");}
-	| IDENTIFIER GREATER NUMBER { printf("comparison -> IDENTIFIER GREATER NUMBER\n");}
-	| IDENTIFIER EQUALTO TERM {printf("comparison -> IDENTIFIER EQUAL TERM\n");}
+comparison: term LESSER term { printf("comparison -> term LESSER term\n");}
+	| term GREATER term { printf("comparison -> term GREATER term\n");}
+	| term EQUALTO term {printf("comparison -> term EQUALTO term\n");}
 
 operation: term addop term { printf("operation -> term addop term\n");}
 	| term mulop term { printf("operation -> term mulop term\n");}

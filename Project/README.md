@@ -72,6 +72,7 @@ x[3] = 5         # Assign value of 5 to the 4th element of array x
 ## Phase 2: Parser Generation (using bison)
 
 Grammar: 
+
 **prog_start: %empty /* epsilon */ {printf("prog_start->epsilon\n");}
 	| functions {printf("prog_start -> functions\n");}**
 

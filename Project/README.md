@@ -68,3 +68,9 @@ x[3] = 5         # Assign value of 5 to the 4th element of array x
 | return             | RETURN     |
 | write              | WRITE      |
 | funct              | FUNCTION   |
+
+## Phase 2: Parser Generation Using bison
+
+| Parser productions               |
+| ---------------------------------|
+|                                  |

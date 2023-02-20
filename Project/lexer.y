@@ -72,6 +72,7 @@ comparison: IDENTIFIER LESSER IDENTIFIER { printf("comparison -> IDENTIFIER LESS
 	| IDENTIFIER LESSER NUMBER { printf("comparison -> IDENTIFIER LESSER NUMBER\n");}
 	| IDENTIFIER GREATER IDENTIFIER { printf("comparison -> IDENTIFIER GREATER IDENTIFIER\n");}
 	| IDENTIFIER GREATER NUMBER { printf("comparison -> IDENTIFIER GREATER NUMBER\n");}
+	| IDENTIFIER EQUALTO TERM {printf("comparison -> IDENTIFIER EQUAL TERM\n");}
 
 operation: term addop term { printf("operation -> term addop term\n");}
 	| term mulop term { printf("operation -> term mulop term\n");}

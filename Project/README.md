@@ -73,13 +73,13 @@ x[3] = 5         # Assign value of 5 to the 4th element of array x
 
 Grammar: 
 **prog_start: %empty /* epsilon */ {printf("prog_start->epsilon\n");}
-	| functions {printf("prog_start -> functions\n");} **
+	| functions {printf("prog_start -> functions\n");}**
 
 **functions: function {printf("functions -> function\n");}
-	| function functions {printf("functions -> function functions\n");} **
+	| function functions {printf("functions -> function functions\n");}**
 
 **function: FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {printf("function -> FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL\n");}
-	| FUNCTION IDENTIFIER L_CURL statements R_CURL {printf("function -> FUNCTION IDENTIFIER L_CURL statements R_CURL\n");} **
+	| FUNCTION IDENTIFIER L_CURL statements R_CURL {printf("function -> FUNCTION IDENTIFIER L_CURL statements R_CURL\n");}**
 
 **arguments: argument {printf("arguments -> argument\n");}
 	| argument COMMA arguments {printf("arguments -> COMMA arguments\n");}**

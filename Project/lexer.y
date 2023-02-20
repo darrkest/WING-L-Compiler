@@ -43,6 +43,7 @@ statement: declaration {printf("statement -> declaration\n");}
 	| else_call {printf("statement -> else_call\n");}
 	
 declaration: INTEGER IDENTIFIER {printf("declaration -> INTEGER IDENTIFIER\n");}
+	| INTEGER IDENTIFIER L_SQUARE term R_SQUARE {printf("declaration -> INTEGER IDENTIFIER L_SQUARE term R_SQUARE\n");}
 
 function_call: IDENTIFIER L_PAR arguments R_PAR {printf("function_call -> IDENTIFIER L_PAR arguments R_PAR\n");}
 	| IDENTIFIER L_PAR operation R_PAR { printf("function_call -> IDENTIFIER L_PAR operation R_PAR\n");}

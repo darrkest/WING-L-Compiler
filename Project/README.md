@@ -49,6 +49,7 @@ x[3] = 5         # Assign value of 5 to the 4th element of array x
 | )                  | R_PAR      |
 | <                  | LESSER     |
 | >                  | GREATER    |
+| =                  | EQUAL      |
 | ==                 | EQUALTO    |
 | ~=                 | NOTEQUAL   |
 | if                 | IFBR       |
@@ -62,6 +63,8 @@ x[3] = 5         # Assign value of 5 to the 4th element of array x
 | }                  | R_CURL     |
 | [                  | L_SQUARE   |
 | ]                  | R_SQUARE   |
+| ,                  | COMMA      |
 | read               | READ       |
+| return             | RETURN     |
 | write              | WRITE      |
 | funct              | FUNCTION   |

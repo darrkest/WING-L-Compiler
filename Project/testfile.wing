@@ -1,6 +1,8 @@
 funct main {
-	int i = 0
-	int test = 100000
+	int i
+	i = 0
+	int test
+	test = 10000
 	while (i < 10) {
 		if (i < 5) {
 			write(i)
@@ -8,6 +10,7 @@ funct main {
 		}
 		elif (i > 4) {
 			i = i + 2
+		}
 	}
 }
 

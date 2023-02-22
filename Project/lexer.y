@@ -11,6 +11,19 @@ struct CodeNode {
   std::string name;
 };
 
+var: IDENTIFIER {
+  CodeNode *node = new CodeNode;
+  node->code = "";
+  node->name = $1;
+  std::string error;
+  if (!find(node->name, Integer, error)) {
+     yyerror(error.c_str());
+  }
+  $$ = node;
+}
+
+
+
 
 int yyerror(char *error){
         printf("Error.%s\n", error);

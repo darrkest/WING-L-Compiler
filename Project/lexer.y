@@ -11,81 +11,81 @@ int yyerror(char *error){
 %token INTEGER IDENTIFIER NUMBER CHAR PLUS MINUS MULT DIV L_PAR R_PAR EQUAL LESSER GREATER EQUALTO NOT NOTEQUAL IFBR ELIFBR ELSEBR AND OR WLOOP READ WRITE FUNCTION L_CURL R_CURL L_SQUARE R_SQUARE COMMA RETURN
 
 %%
-prog_start: %empty /* epsilon */ {printf("prog_start->epsilon\n");}
-	| functions {printf("prog_start -> functions\n");}
+prog_start: %empty /* epsilon */ {}
+	| functions {}
 
-functions: function {printf("functions -> function\n");}
-	| function functions {printf("functions -> function functions\n");}
+functions: function {}
+	| function functions {}
 
-function: FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {printf("function -> FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL\n");}
-	| FUNCTION IDENTIFIER L_CURL statements R_CURL {printf("function -> FUNCTION IDENTIFIER L_CURL statements R_CURL\n");}
+function: FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {}
+	| FUNCTION IDENTIFIER L_CURL statements R_CURL {}
 
-arguments: argument {printf("arguments -> argument\n");}
-	| argument COMMA arguments {printf("arguments -> COMMA arguments\n");}
+arguments: argument {}
+	| argument COMMA arguments {}
 
-argument: %empty /* epsilon */ {printf("argument -> epsilon\n");}
-	| INTEGER IDENTIFIER {printf("argument -> INTEGER IDENTIFIER\n");}
-        | INTEGER IDENTIFIER L_SQUARE NUMBER R_SQUARE {printf("argument -> INTEGER IDENTIFIER L_SQUARE NUMBER R_SQUARE\n");}
-	| term {printf("argument -> term\n");}
+argument: %empty /* epsilon */ {}
+	| INTEGER IDENTIFIER {}
+        | INTEGER IDENTIFIER L_SQUARE NUMBER R_SQUARE {}
+	| term {}
 
-statements: %empty /* epsilon */ {printf("statements -> epsilon\n");}
-	| statement statements {printf("statements -> statement statements\n");}
+statements: %empty /* epsilon */ {}
+	| statement statements {}
 
-statement: declaration {printf("statement -> declaration\n");}
-        | function_call {printf("statement -> function_call\n");}
-	| assignment {printf("statement -> assignment\n");}
-	| read_call   {printf("statement -> read_call\n");}
-	| write_call {printf("statement -> write_call\n");}
-	| return_call {printf("statement -> return_call\n");}
-	| while_call {printf("statement -> while_call\n");}
-	| if_call {printf("statement -> if_call\n");}
-	| elif_call {printf("statement -> elif_call\n");}
-	| else_call {printf("statement -> else_call\n");}
+statement: declaration {}
+        | function_call {}
+	| assignment {}
+	| read_call   {}
+	| write_call {}
+	| return_call {}
+	| while_call {}
+	| if_call {}
+	| elif_call {}
+	| else_call {}
 	
-declaration: INTEGER IDENTIFIER {printf("declaration -> INTEGER IDENTIFIER\n");}
-	| INTEGER IDENTIFIER L_SQUARE term R_SQUARE {printf("declaration -> INTEGER IDENTIFIER L_SQUARE term R_SQUARE\n");}
+declaration: INTEGER IDENTIFIER {}
+	| INTEGER IDENTIFIER L_SQUARE term R_SQUARE {}
 
-function_call: IDENTIFIER L_PAR arguments R_PAR {printf("function_call -> IDENTIFIER L_PAR arguments R_PAR\n");}
-	| IDENTIFIER L_PAR operation R_PAR { printf("function_call -> IDENTIFIER L_PAR operation R_PAR\n");}
+function_call: IDENTIFIER L_PAR arguments R_PAR {}
+	| IDENTIFIER L_PAR operation R_PAR {}
 
-assignment: IDENTIFIER EQUAL term {printf("assignment -> IDENTIFIER EQUAL term\n");}
-	| IDENTIFIER EQUAL operation {printf("assignment -> IDENTIFIER EQUAL operation\n");}
+assignment: IDENTIFIER EQUAL term {}
+	| IDENTIFIER EQUAL operation {}
 
-read_call: READ L_PAR IDENTIFIER R_PAR {printf("read_call -> READ L_PAR IDENTIFIER R_PAR\n");}
+read_call: READ L_PAR IDENTIFIER R_PAR {}
 
-write_call: WRITE L_PAR IDENTIFIER R_PAR {printf("write_call -> WRITE L_PAR IDENTIFIER R_PAR\n");}
+write_call: WRITE L_PAR IDENTIFIER R_PAR {}
 
-return_call: RETURN IDENTIFIER {printf("return_call -> RETURN IDENTIFIER\n");}
-	| RETURN NUMBER { printf("return_call -> RETURN NUMBER\n");}
-	| RETURN operation { printf("return_call -> RETURN operation\n");}
+return_call: RETURN IDENTIFIER {}
+	| RETURN NUMBER {}
+	| RETURN operation {}
 
-while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL { printf("while_call -> WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL\n");}
+while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL {}
 
-if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call else_call {printf("if_call -> IFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call else_call\n");}
+if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call else_call {}
 
-elif_call: %empty /*epsilon*/ {printf("elif_call -> epsilon\n");}
-	| ELIFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call {printf("elif_call -> ELIFBR L_PAR comparison R_PAR L_CURL statements R_CURL\n");}
+elif_call: %empty /*epsilon*/ {}
+	| ELIFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call {}
 
-else_call: %empty /*epsilon*/ {printf("else_call -> epsilon\n");}
-	| ELSEBR L_CURL statements R_CURL {printf("else_call -> ELSEIF L_CURL statements R_CURL\n");}
+else_call: %empty /*epsilon*/ {}
+	| ELSEBR L_CURL statements R_CURL {}
 
-comparison: term LESSER term { printf("comparison -> term LESSER term\n");}
-	| term GREATER term { printf("comparison -> term GREATER term\n");}
-	| term EQUALTO term {printf("comparison -> term EQUALTO term\n");}
+comparison: term LESSER term {}
+	| term GREATER term {}
+	| term EQUALTO term {}
 
-operation: term addop term { printf("operation -> term addop term\n");}
-	| term mulop term { printf("operation -> term mulop term\n");}
+operation: term addop term {}
+	| term mulop term {}
 
-term: %empty /*epsilon*/ {printf("term -> epsilon\n");}
-	| IDENTIFIER {printf("term -> IDENTIFIER\n");}
-	| NUMBER {printf("term -> NUMBER\n");}
-	| function_call{printf("term -> function_call\n");}
+term: %empty /*epsilon*/ {}
+	| IDENTIFIER {}
+	| NUMBER {}
+	| function_call{}
 
-addop: PLUS { printf("addop -> PLUS\n");}
-	| MINUS {printf("addop -> MINUS\n");}
+addop: PLUS {}
+	| MINUS {}
 
-mulop: MULT { printf("mulop -> MULT\n");}
-	| DIV { printf("mulop -> DIV\n");}
+mulop: MULT {}
+	| DIV {}
 
 %%
 

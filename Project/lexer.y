@@ -1,6 +1,16 @@
 %{
+#include<string>
+#include<vector>
+#include<string.h>
 #include <stdio.h>
+
 extern FILE* yyin;
+
+struct CodeNode {
+  std::string code;
+  std::string name;
+};
+
 
 int yyerror(char *error){
         printf("Error.%s\n", error);

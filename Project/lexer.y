@@ -22,8 +22,14 @@ var: IDENTIFIER {
   $$ = node;
 }
 
-
-
+statement: IDENTIFIER ASSIGN IDENTIFIER PLUS IDENTIFIER {}
+	| IDENTIFIER ASSIGN IDENTIFIER {
+	  struct CodeNode *node = new CodeNode;
+	  std::string identifier= $1;
+	  std::string symbol = $3;
+	  node->code = "= " + identifier + ", " + symbol + "\n";
+	  $$ = node;
+	}
 
 int yyerror(char *error){
         printf("Error.%s\n", error);

@@ -11,7 +11,7 @@ struct CodeNode {
   std::string name;
 };
 
-var: IDENTIFIER {
+var: IDENT {
   CodeNode *node = new CodeNode;
   node->code = "";
   node->name = $1;
@@ -22,14 +22,14 @@ var: IDENTIFIER {
   $$ = node;
 }
 
-statement: IDENTIFIER ASSIGN IDENTIFIER PLUS IDENTIFIER {}
+/*statement: IDENTIFIER ASSIGN IDENTIFIER PLUS IDENTIFIER {}
 	| IDENTIFIER ASSIGN IDENTIFIER {
 	  struct CodeNode *node = new CodeNode;
 	  std::string identifier= $1;
 	  std::string symbol = $3;
 	  node->code = "= " + identifier + ", " + symbol + "\n";
 	  $$ = node;
-	}
+	} */  
 
 int yyerror(char *error){
         printf("Error.%s\n", error);
@@ -37,7 +37,7 @@ int yyerror(char *error){
 %}
 
 %start prog_start
-%token INTEGER IDENTIFIER NUMBER CHAR PLUS MINUS MULT DIV L_PAR R_PAR ASSIGN EQUAL LESSER GREATER EQUALTO NOT NOTEQUAL IFBR ELIFBR ELSEBR AND OR WLOOP READ WRITE FUNCTION L_CURL R_CURL L_SQUARE R_SQUARE COMMA RETURN
+%token INTEGER IDENTIFIER NUMBER CHAR PLUS MINUS MULT DIV MOD L_PAR R_PAR ASSIGN EQUAL LESSER GREATER EQUALTO NOT NOTEQUAL IFBR ELIFBR ELSEBR AND OR WLOOP READ WRITE FUNCTION L_CURL R_CURL L_SQUARE R_SQUARE COMMA RETURN
 
 %%
 prog_start: %empty /* epsilon */ {}
@@ -70,6 +70,7 @@ statement: declaration {}
 	| if_call {}
 	| elif_call {}
 	| else_call {}
+	| symbol {}
 	
 declaration: INTEGER IDENTIFIER {}
 	| INTEGER IDENTIFIER L_SQUARE term R_SQUARE {}
@@ -79,10 +80,58 @@ function_call: IDENTIFIER L_PAR arguments R_PAR {}
 
 assignment: IDENTIFIER EQUAL term {}
 	| IDENTIFIER EQUAL operation {}
+	| IDENT ASSIGN symbol PLUS symbol {
+		std::string temp = create_temp();
+	  	struct CodeNode *node = new CodeNode;
+	  	std::string identifier= $1;
+	  	std::string symbol1 = $3;
+		std::string symbol2 = $5;
+	  	node->code = "+ " + temp + ", " + symbol1 + ", " + symbol2 + "\n";
+	  	$$ = node;
+	  }
+	| IDENT ASSIGN symbol MINUS symbol {
+	  	std::string temp = create_temp();
+	  	struct CodeNode *node = new CodeNode;
+	  	std::string identifier= $1;
+	  	std::string symbol1 = $3;
+		std::string symbol2 = $5;
+	  	node->code = "- " + temp + ", " + symbol1 + ", " + symbol2 + "\n";
+	  	$$ = node;
+	  }
+	| IDENT ASSIGN symbol MULT symbol {
+	  	std::string temp = create_temp();
+	  	struct CodeNode *node = new CodeNode;
+	  	std::string identifier= $1;
+	  	std::string symbol1 = $3;
+		std::string symbol2 = $5;
+	  	node->code = "* " + temp + ", " + symbol1 + ", " + symbol2 + "\n";
+	  	$$ = node;
+	  }
+	| IDENT ASSIGN symbol DIV symbol {
+	  	std::string temp = create_temp();
+	  	struct CodeNode *node = new CodeNode;
+	  	std::string identifier= $1;
+	  	std::string symbol1 = $3;
+		std::string symbol2 = $5;
+	  	node->code = "/ " + temp + ", " + symbol1 + ", " + symbol2 + "\n";
+	  	$$ = node;
+	  }
+	| IDENT ASSIGN symbol {
+		struct CodeNode *node = new CodeNode;
+	  	std::string identifier= $1;
+	  	std::string symbol = $3;
+	  	node->code = "= " + identifier + ", " + symbol + "\n";
+	  	$$ = node;
+	  }
 
 read_call: READ L_PAR IDENTIFIER R_PAR {}
 
 write_call: WRITE L_PAR IDENTIFIER R_PAR {}
+	| WRITE IDENT {
+		struct CodeNode *node = new CodeNode;
+		std::string identifier = $2;
+		node->code = ".> " + identifier + "\n";
+	}
 
 return_call: RETURN IDENTIFIER {}
 	| RETURN NUMBER {}
@@ -97,6 +146,9 @@ elif_call: %empty /*epsilon*/ {}
 
 else_call: %empty /*epsilon*/ {}
 	| ELSEBR L_CURL statements R_CURL {}
+
+symbol: IDENT {$$ = 1;}
+      | NUMBER {$$ = 1;}
 
 comparison: term LESSER term {}
 	| term GREATER term {}

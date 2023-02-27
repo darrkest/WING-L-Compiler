@@ -116,6 +116,15 @@ assignment: IDENTIFIER EQUAL term {}
 	  	node->code = "/ " + temp + ", " + symbol1 + ", " + symbol2 + "\n";
 	  	$$ = node;
 	  }
+	| IDENT ASSIGN symbol MOD symbol {
+		std::string temp = create_temp();
+	  	struct CodeNode *node = new CodeNode;
+	  	std::string identifier= $1;
+	  	std::string symbol1 = $3;
+		std::string symbol2 = $5;
+	  	node->code = "% " + temp + ", " + symbol1 + ", " + symbol2 + "\n";
+	  	$$ = node;
+	}
 	| IDENT ASSIGN symbol {
 		struct CodeNode *node = new CodeNode;
 	  	std::string identifier= $1;

@@ -156,6 +156,6 @@ int main (int argc, char *argv[]) {
 }
 
 void yyerror(const char *msg) {
-	printf("** Line %d: %s\n", currLine, msg);
+	printf("** Line %d: %s\n", errorLine, msg);
 	exit(1);
 }

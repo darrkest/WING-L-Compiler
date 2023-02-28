@@ -1,0 +1,5 @@
+funct main {
+	int a
+	a = 150
+	write(a)
+}

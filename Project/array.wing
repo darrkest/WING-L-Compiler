@@ -1,0 +1,19 @@
+funct main {
+	int a[20]
+	int b
+	int c
+
+	b = 3
+	c = 5
+	a[0] = b + c
+	write(a[0])	# Should print out 8
+
+	a[1] = 100
+	write(a[1])	# Should print out 100
+
+	a[2] = 200
+	write(a[2])	# Should print out 200
+
+	a[3] = a[0] * (a[1] + c)
+	write(a[3])	# Should print out 840; since 840 = 8 * (100 + 5)
+}

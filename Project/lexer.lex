@@ -6,7 +6,7 @@
 int errorPosition = 1;
 int errorLine = 1;
 
-extern char *identToken;
+extern int identToken;
 extern int numberToken;
 %}
 

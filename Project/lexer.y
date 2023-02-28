@@ -55,6 +55,15 @@ void add_variable_to_symbol_table(std::string &value, Type t) {
 }
 
 void print_symbol_table(void) {
+  printf("symbol table:\n");
+  printf("--------------------\n");
+  for(int i=0; i<symbol_table.size(); i++) {
+    printf("function: %s\n", symbol_table[i].name.c_str());
+    for(int j=0; j<symbol_table[i].declarations.size(); j++) {
+      printf("  locals: %s\n", symbol_table[i].declarations[j].name.c_str());
+    }
+  }
+  printf("--------------------\n");
 }
 
 %}
@@ -64,7 +73,13 @@ void print_symbol_table(void) {
 }
 %define parse.error verbose
 %start prog_start
-%token INTEGER CHAR PLUS MINUS MULT DIV MOD L_PAR R_PAR ASSIGN EQUAL LESSER GREATER EQUALTO NOT NOTEQUAL IFBR ELIFBR ELSEBR AND OR WLOOP READ WRITE FUNCTION L_CURL R_CURL L_SQUARE R_SQUARE COMMA RETURN
+%token INTEGER CHAR FUNCTION RETURN COMMA
+%token PLUS MINUS MULT DIV MOD 
+%token L_PAR R_PAR L_CURL R_CURL L_SQUARE R_SQUARE 
+%token EQUAL
+%token LESSER GREATER EQUALTO NOT NOTEQUAL AND OR
+%token IFBR ELIFBR ELSEBR WLOOP 
+%token READ WRITE
 %token <op_val> NUMBER
 %token <op_val> IDENTIFIER
 %type <op_val> term

@@ -152,8 +152,14 @@ operation: term addop term {}
 	| term mulop term {}
 
 term: %empty /*epsilon*/ {}
-	| IDENTIFIER {}
-	| NUMBER {}
+	| IDENTIFIER { 
+		printf("term -> IDENTIFIER\n");
+		$$ = $1 
+	}
+	| NUMBER {
+		printf("term -> NUMBER\n");
+		$$ = $1;
+	}
 	| function_call{}
 
 addop: PLUS {}

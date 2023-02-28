@@ -87,10 +87,10 @@ void print_symbol_table(void) {
 %%
 
 prog_start: %empty /* epsilon */ {}
-	| functions {}
+	| functions { printf("prog_start -> functions\n"); }
 
-functions: function {}
-	| function functions {}
+functions: %empty /* epsilon */ { printf("functions -> epsilon\n"); }
+	| function functions { printf("functions -> function functions\n"); }
 
 function: FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {}
 	| FUNCTION IDENTIFIER L_CURL statements R_CURL {}

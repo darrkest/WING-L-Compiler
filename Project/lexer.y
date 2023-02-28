@@ -4,17 +4,73 @@
 #include<string.h>
 #include <stdio.h>
 
-extern FILE* yyin;
+extern int yylex(void);
+void yyerror(const char *msg);
+extern int errorLine;
 
-int yyerror(char *error){
-        printf("Error.%s\n", error);
+char *identToken;
+int numberToken;
+int count_names = 0;
+
+enum Type { Integer, Array };
+struct Symbol {
+	std::string name;
+	Type type;
+};
+struct Function {
+	std::string name;
+	std::vector<Symbol> declarations;
+};
+
+std::vector<Function> symbol_table;
+
+Function *get_function() {
+	int last = symbol_table.size()-1;
+	return &symbol_table[last];
 }
+
+bool find(std::string &value) {
+	Function *f = get_function();
+	for(int i = 0; i < f->declarations.size(); ++i) {
+		Symbol *s = &f->declarations[i];
+		if (s->name == value) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void add_function_to_symbol_table(std::string &value) {
+	Function f;
+	f.name = value;
+	symbol_table.push_back(f);
+}
+
+void add_variable_to_symbol_table(std::string &value, Type t) {
+	Symbol s;
+	s.name = value;
+	s.type = t;
+	Function *f = get_function();
+	f->declarations.push_back(s);
+}
+
+void print_symbol_table(void) {
+}
+
 %}
 
+%union {
+	char *op_val;
+}
+%define parse.error verbose
 %start prog_start
-%token INTEGER IDENTIFIER NUMBER CHAR PLUS MINUS MULT DIV MOD L_PAR R_PAR ASSIGN EQUAL LESSER GREATER EQUALTO NOT NOTEQUAL IFBR ELIFBR ELSEBR AND OR WLOOP READ WRITE FUNCTION L_CURL R_CURL L_SQUARE R_SQUARE COMMA RETURN
+%token INTEGER CHAR PLUS MINUS MULT DIV MOD L_PAR R_PAR ASSIGN EQUAL LESSER GREATER EQUALTO NOT NOTEQUAL IFBR ELIFBR ELSEBR AND OR WLOOP READ WRITE FUNCTION L_CURL R_CURL L_SQUARE R_SQUARE COMMA RETURN
+%token <op_val> NUMBER
+%token <op_val> IDENTIFIER
+%type <op_val> term
 
 %%
+
 prog_start: %empty /* epsilon */ {}
 	| functions {}
 
@@ -94,17 +150,12 @@ mulop: MULT {}
 %%
 
 int main (int argc, char *argv[]) {
-  printf("Ctrl+D to quit.\n");
-  if (argc >= 2) {
-	yyin = fopen(argv[1], "r");
-	if (yyin == NULL) {
-		yyin = stdin;
-	}
-  }
-  else {
-	yyin = stdin;
-  }
   yyparse();
-  return 1;
-  printf("Quitting...\n");
+  print_symbol_table();
+  return 0;
+}
+
+void yyerror(const char *msg) {
+	printf("** Line %d: %s\n", currLine, msg);
+	exit(1);
 }

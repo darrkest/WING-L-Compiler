@@ -23,7 +23,7 @@ IDENTIFIER {ALPHA}|{ALPHA}(_|{ALPHA})*
 "%"    { errorPosition += yyleng; return MOD;}
 "("	 { errorPosition += yyleng; return L_PAR;}
 ")"	 { errorPosition += yyleng; return R_PAR;}
-":="    { errorPosition += yyleng; return ASSIGN;}
+//":="    { errorPosition += yyleng; return ASSIGN;}
 "="	 { errorPosition += yyleng; return EQUAL;}
 "<" 	 { errorPosition += yyleng; return LESSER;}
 ">"	 { errorPosition += yyleng; return GREATER;}

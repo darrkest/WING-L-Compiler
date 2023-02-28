@@ -1,6 +1,9 @@
 %{
 #include "y.tab.h"
 #include <stdio.h>
+int currentPosition = 1;
+char numberToken = '\0';
+char identToken = '\0';
 int errorPosition = 1;
 int errorLine = 1;
 %}
@@ -47,8 +50,24 @@ IDENTIFIER {ALPHA}|{ALPHA}(_|{ALPHA})*
 "\n"	 { errorPosition = 1; ++errorLine; }
 
 "_"{IDENTIFIER} { printf("Error: Identifier can't begin with an underscore. Line %d, position %d\n", errorLine, errorPosition); exit(0);}
-{DIGIT}+ { errorPosition++; return NUMBER;}
-{IDENTIFIER} { errorPosition++; return IDENTIFIER;}
+{DIGIT}+ { 
+  currentPosition += yyleng;
+  char *token = new char[yyleng];
+  strcpy(token, yytext);
+  yylval.op_val = token;
+  numberToken = atoi(yytext);
+  errorPosition++; 
+  return NUMBER;
+ }
+{IDENTIFIER} { 
+  currentPosition += yyleng;
+  char *token = new char[yyleng];
+  strcpy(token, yytext);
+  yylval.op_val = token;
+  identToken = atoi(yytext);
+  errorPosition++; 
+  return IDENTIFIER;
+}
 
 .        { printf("Error: Unidentified symbol \"%s\" detected. Line %d, position %d\n", yytext, errorLine, errorPosition); exit(0);}
 

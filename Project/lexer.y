@@ -80,7 +80,7 @@ function_call: IDENTIFIER L_PAR arguments R_PAR {}
 
 assignment: IDENTIFIER EQUAL term {}
 	| IDENTIFIER EQUAL operation {}
-	| IDENT ASSIGN symbol PLUS symbol {
+	| IDENTIFIER ASSIGN symbol PLUS symbol {
 		std::string temp = create_temp();
 	  	struct CodeNode *node = new CodeNode;
 	  	std::string identifier= $1;
@@ -89,7 +89,7 @@ assignment: IDENTIFIER EQUAL term {}
 	  	node->code = "+ " + temp + ", " + symbol1 + ", " + symbol2 + "\n";
 	  	$$ = node;
 	  }
-	| IDENT ASSIGN symbol MINUS symbol {
+	| IDENTIFIER ASSIGN symbol MINUS symbol {
 	  	std::string temp = create_temp();
 	  	struct CodeNode *node = new CodeNode;
 	  	std::string identifier= $1;
@@ -98,7 +98,7 @@ assignment: IDENTIFIER EQUAL term {}
 	  	node->code = "- " + temp + ", " + symbol1 + ", " + symbol2 + "\n";
 	  	$$ = node;
 	  }
-	| IDENT ASSIGN symbol MULT symbol {
+	| IDENTIFIER ASSIGN symbol MULT symbol {
 	  	std::string temp = create_temp();
 	  	struct CodeNode *node = new CodeNode;
 	  	std::string identifier= $1;
@@ -107,7 +107,7 @@ assignment: IDENTIFIER EQUAL term {}
 	  	node->code = "* " + temp + ", " + symbol1 + ", " + symbol2 + "\n";
 	  	$$ = node;
 	  }
-	| IDENT ASSIGN symbol DIV symbol {
+	| IDENTIFIER ASSIGN symbol DIV symbol {
 	  	std::string temp = create_temp();
 	  	struct CodeNode *node = new CodeNode;
 	  	std::string identifier= $1;
@@ -116,7 +116,7 @@ assignment: IDENTIFIER EQUAL term {}
 	  	node->code = "/ " + temp + ", " + symbol1 + ", " + symbol2 + "\n";
 	  	$$ = node;
 	  }
-	| IDENT ASSIGN symbol MOD symbol {
+	| IDENTIFIER ASSIGN symbol MOD symbol {
 		std::string temp = create_temp();
 	  	struct CodeNode *node = new CodeNode;
 	  	std::string identifier= $1;
@@ -125,7 +125,7 @@ assignment: IDENTIFIER EQUAL term {}
 	  	node->code = "% " + temp + ", " + symbol1 + ", " + symbol2 + "\n";
 	  	$$ = node;
 	}
-	| IDENT ASSIGN symbol {
+	| IDENTIFIER ASSIGN symbol {
 		struct CodeNode *node = new CodeNode;
 	  	std::string identifier= $1;
 	  	std::string symbol = $3;
@@ -136,7 +136,7 @@ assignment: IDENTIFIER EQUAL term {}
 read_call: READ L_PAR IDENTIFIER R_PAR {}
 
 write_call: WRITE L_PAR IDENTIFIER R_PAR {}
-	| WRITE IDENT {
+	| WRITE IDENTIFIER {
 		struct CodeNode *node = new CodeNode;
 		std::string identifier = $2;
 		node->code = ".> " + identifier + "\n";
@@ -156,7 +156,7 @@ elif_call: %empty /*epsilon*/ {}
 else_call: %empty /*epsilon*/ {}
 	| ELSEBR L_CURL statements R_CURL {}
 
-symbol: IDENT {$$ = 1;}
+symbol: IDENTIFIER {$$ = 1;}
       | NUMBER {$$ = 1;}
 
 comparison: term LESSER term {}

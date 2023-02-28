@@ -154,7 +154,7 @@ operation: term addop term {}
 term: %empty /*epsilon*/ {}
 	| IDENTIFIER { 
 		printf("term -> IDENTIFIER\n");
-		$$ = $1 
+		$$ = $1; 
 	}
 	| NUMBER {
 		printf("term -> NUMBER\n");

@@ -117,7 +117,7 @@ statement: declaration {}
 	| elif_call {}
 	| else_call {}
 	
-declaration: INTEGER IDENTIFIER {}
+declaration: INTEGER IDENTIFIER SMCOL{}
 	| INTEGER IDENTIFIER L_SQUARE term R_SQUARE SMCOL {}
 
 function_call: IDENTIFIER L_PAR arguments R_PAR SMCOL{}

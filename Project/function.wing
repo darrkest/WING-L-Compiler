@@ -1,21 +1,21 @@
 funct add(int a, int b) {
-	return a + b
+	return a + b;
 }
 
 funct mult(int a, int b) {
-	return a * b
+	return a * b;
 }
 
 funct main {
-	int a
-	int b
-	int c
-	int d
-	a = 100
-	b = 50
-	c = add(a,b)
-	write(c)	# Should print 150
+	int a;
+	int b;
+	int c;
+	int d;
+	a = 100;
+	b = 50;
+	c = add(a,b);
+	write(c);	# Should print 150
 
 	d = mult(c, a+b);
-	write(d)	# Should print "22500", since 22500 = 150 * 150
+	write(d);	# Should print "22500", since 22500 = 150 * 150
 }

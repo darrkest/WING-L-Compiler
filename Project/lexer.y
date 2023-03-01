@@ -128,8 +128,8 @@ statement: declaration {}
 declaration: INTEGER IDENTIFIER SMCOL{}
 	| INTEGER IDENTIFIER L_SQUARE term R_SQUARE SMCOL {}
 
-function_call: IDENTIFIER L_PAR arguments R_PAR SMCOL{}
-	| IDENTIFIER L_PAR operation R_PAR SMCOL {}
+function_call: IDENTIFIER L_PAR arguments R_PAR {}
+	| IDENTIFIER L_PAR operation R_PAR {}
 
 assignment: IDENTIFIER EQUAL term SMCOL{}
 	| IDENTIFIER EQUAL operation SMCOL {}
@@ -160,6 +160,7 @@ comparison: term LESSER term {}
 
 operation: term addop term {}
 	| term mulop term {}
+	| term MOD term {}
 
 term: %empty /*epsilon*/ {}
 	| IDENTIFIER { 
@@ -171,6 +172,7 @@ term: %empty /*epsilon*/ {}
 		$$ = $1;
 	}
 	| function_call{}
+	| operation{}
 
 addop: PLUS {}
 	| MINUS {}

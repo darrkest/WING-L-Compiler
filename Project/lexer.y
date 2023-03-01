@@ -139,6 +139,7 @@ assignment: IDENTIFIER EQUAL term SMCOL{}
 read_call: READ L_PAR IDENTIFIER R_PAR SMCOL {}
 
 write_call: WRITE L_PAR IDENTIFIER R_PAR SMCOL {}
+	| WRITE L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {}
 
 return_call: RETURN IDENTIFIER SMCOL{}
 	| RETURN NUMBER SMCOL{}
@@ -167,12 +168,14 @@ term: %empty /*epsilon*/ {}
 		printf("term -> IDENTIFIER\n");
 		$$ = $1; 
 	}
+	| IDENTIFIER L_SQUARE term R_SQUARE {}
 	| NUMBER {
 		printf("term -> NUMBER\n");
 		$$ = $1;
 	}
 	| function_call{}
 	| operation{}
+	| L_PAR operation R_PAR {}
 
 addop: PLUS {}
 	| MINUS {}

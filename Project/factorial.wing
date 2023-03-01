@@ -1,18 +1,18 @@
 funct main {
-    int num
-    read(num)
-    factorial(num)
+    int num;
+    read(num);
+    factorial(num);
 }
 
 funct factorial(int k)
 {
-    int i
-    i = 1
-    int fac
-    fac = 1
+    int i;
+    i = 1;
+    int fac;
+    fac = 1;
     while (i < k){
-        fac = fac * i
-        i = i + 1
+        fac = fac * i;
+        i = i + 1;
     }
     
 }

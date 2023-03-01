@@ -43,6 +43,7 @@ IDENTIFIER {ALPHA}|{ALPHA}(_|{ALPHA})*
 "["      { errorPosition += yyleng; return L_SQUARE;}
 "]"	 { errorPosition += yyleng; return R_SQUARE;}
 ","	 { errorPosition += yyleng; return COMMA;}
+";"  { errorPosition += yyleng; return SMCOL;}
 "return" { errorPosition += yyleng; return RETURN;}
 
 "#"(.)*	 { }

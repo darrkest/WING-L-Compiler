@@ -125,6 +125,8 @@ function_call: IDENTIFIER L_PAR arguments R_PAR SMCOL{}
 
 assignment: IDENTIFIER EQUAL term SMCOL{}
 	| IDENTIFIER EQUAL operation SMCOL {}
+	| IDENTIFIER L_SQUARE term R_SQUARE EQUAL term SMCOL {}
+	| IDENTIFIER L_SQUARE term R_SQUARE EQUAL operation SMCOL {}
 
 read_call: READ L_PAR IDENTIFIER R_PAR SMCOL {}
 

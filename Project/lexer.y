@@ -73,7 +73,7 @@ void print_symbol_table(void) {
 }
 %define parse.error verbose
 %start prog_start
-%token INTEGER CHAR FUNCTION RETURN COMMA
+%token INTEGER CHAR FUNCTION RETURN COMMA SMCOL
 %token PLUS MINUS MULT DIV MOD 
 %token L_PAR R_PAR L_CURL R_CURL L_SQUARE R_SQUARE 
 %token EQUAL
@@ -118,21 +118,21 @@ statement: declaration {}
 	| else_call {}
 	
 declaration: INTEGER IDENTIFIER {}
-	| INTEGER IDENTIFIER L_SQUARE term R_SQUARE {}
+	| INTEGER IDENTIFIER L_SQUARE term R_SQUARE SMCOL {}
 
-function_call: IDENTIFIER L_PAR arguments R_PAR {}
-	| IDENTIFIER L_PAR operation R_PAR {}
+function_call: IDENTIFIER L_PAR arguments R_PAR SMCOL{}
+	| IDENTIFIER L_PAR operation R_PAR SMCOL {}
 
-assignment: IDENTIFIER EQUAL term {}
-	| IDENTIFIER EQUAL operation {}
+assignment: IDENTIFIER EQUAL term SMCOL{}
+	| IDENTIFIER EQUAL operation SMCOL {}
 
-read_call: READ L_PAR IDENTIFIER R_PAR {}
+read_call: READ L_PAR IDENTIFIER R_PAR SMCOL {}
 
-write_call: WRITE L_PAR IDENTIFIER R_PAR {}
+write_call: WRITE L_PAR IDENTIFIER R_PAR SMCOL {}
 
-return_call: RETURN IDENTIFIER {}
-	| RETURN NUMBER {}
-	| RETURN operation {}
+return_call: RETURN IDENTIFIER SMCOL {}
+	| RETURN NUMBER SMCOL {}
+	| RETURN operation SMCOL {}
 
 while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL {}
 
@@ -144,12 +144,12 @@ elif_call: %empty /*epsilon*/ {}
 else_call: %empty /*epsilon*/ {}
 	| ELSEBR L_CURL statements R_CURL {}
 
-comparison: term LESSER term {}
-	| term GREATER term {}
-	| term EQUALTO term {}
+comparison: term LESSER term SMCOL {}
+	| term GREATER term SMCOL {}
+	| term EQUALTO term SMCOL {}
 
-operation: term addop term {}
-	| term mulop term {}
+operation: term addop term SMCOL {}
+	| term mulop term SMCOL {}
 
 term: %empty /*epsilon*/ {}
 	| IDENTIFIER { 

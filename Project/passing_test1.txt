@@ -1,11 +1,11 @@
 funct main {
-	int a = 100
-	int b = 50
-	int c = a + b	# Store result in c
-	write(c)	
+	int a = 100;
+	int b = 50;
+	int c = a + b;	# Store result in c
+	write(c);
 	while (c > 0) {
 		if (c == 100 or c == 50 or c == 25) {	# If c is 100, 50, 25 output it
-			write(c)
+			write(c);
 		}
 	}
 }

@@ -92,8 +92,16 @@ prog_start: %empty /* epsilon */ {}
 functions: %empty /* epsilon */ { printf("functions -> epsilon\n"); }
 	| function functions { printf("functions -> function functions\n"); }
 
-function: FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {}
-	| FUNCTION IDENTIFIER L_CURL statements R_CURL {}
+function: FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {
+		std::string func_name = $2;
+		add_function_to_symbol_table(func_name);
+		printf("funct %s\n", func_name.c_str());
+	}
+	| FUNCTION IDENTIFIER L_CURL statements R_CURL {
+		std::string func_name = $2;
+		add_function_to_symbol_table(func_name);
+		printf("funct %s\n", func_name.c_str());
+	}
 
 arguments: argument {}
 	| argument COMMA arguments {}

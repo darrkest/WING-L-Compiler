@@ -140,9 +140,9 @@ read_call: READ L_PAR IDENTIFIER R_PAR SMCOL {}
 
 write_call: WRITE L_PAR IDENTIFIER R_PAR SMCOL {}
 
-return_call: RETURN IDENTIFIER SMCOL {}
-	| RETURN NUMBER SMCOL {}
-	| RETURN operation SMCOL {}
+return_call: RETURN IDENTIFIER SMCOL{}
+	| RETURN NUMBER SMCOL{}
+	| RETURN operation SMCOL{}
 
 while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL {}
 
@@ -154,12 +154,12 @@ elif_call: %empty /*epsilon*/ {}
 else_call: %empty /*epsilon*/ {}
 	| ELSEBR L_CURL statements R_CURL {}
 
-comparison: term LESSER term SMCOL {}
-	| term GREATER term SMCOL {}
-	| term EQUALTO term SMCOL {}
+comparison: term LESSER term {}
+	| term GREATER term {}
+	| term EQUALTO term {}
 
-operation: term addop term SMCOL {}
-	| term mulop term SMCOL {}
+operation: term addop term {}
+	| term mulop term {}
 
 term: %empty /*epsilon*/ {}
 	| IDENTIFIER { 

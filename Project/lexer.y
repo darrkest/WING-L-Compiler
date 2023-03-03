@@ -141,9 +141,7 @@ read_call: READ L_PAR IDENTIFIER R_PAR SMCOL {}
 write_call: WRITE L_PAR IDENTIFIER R_PAR SMCOL {}
 	| WRITE L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {}
 
-return_call: RETURN IDENTIFIER SMCOL{}
-	| RETURN NUMBER SMCOL{}
-	| RETURN operation SMCOL{}
+return_call: RETURN term SMCOL {}
 
 while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL {}
 
@@ -159,9 +157,14 @@ comparison: term LESSER term {}
 	| term GREATER term {}
 	| term EQUALTO term {}
 
-operation: term addop term {}
-	| term mulop term {}
-	| term MOD term {}
+operation: L_PAR operation R_PAR {}
+	| term op term {}
+
+op: PLUS {}
+	| MINUS {}
+	| MULT {}
+	| DIV {}
+	| MOD {}
 
 term: %empty /*epsilon*/ {}
 	| IDENTIFIER { 
@@ -175,13 +178,6 @@ term: %empty /*epsilon*/ {}
 	}
 	| function_call{}
 	| operation{}
-	| L_PAR operation R_PAR {}
-
-addop: PLUS {}
-	| MINUS {}
-
-mulop: MULT {}
-	| DIV {}
 
 %%
 

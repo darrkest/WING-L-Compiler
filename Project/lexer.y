@@ -125,18 +125,17 @@ statement: declaration {}
 	| elif_call {}
 	| else_call {}
 	
-declaration: INTEGER IDENTIFIER SMCOL{}
-	| INTEGER IDENTIFIER L_SQUARE term R_SQUARE SMCOL {}
+declaration: declared_term SMCOL{}
 
 function_call: IDENTIFIER L_PAR arguments R_PAR {}
 
 assignment: IDENTIFIER EQUAL term SMCOL{}
-	| IDENTIFIER L_SQUARE term R_SQUARE EQUAL term SMCOL {}
+	| IDENTIFIER array EQUAL term SMCOL {}
 
 read_call: READ L_PAR IDENTIFIER R_PAR SMCOL {}
 
 write_call: WRITE L_PAR IDENTIFIER R_PAR SMCOL {}
-	| WRITE L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {}
+	| WRITE L_PAR IDENTIFIER array R_PAR SMCOL {}
 
 return_call: RETURN term SMCOL {}
 
@@ -150,9 +149,11 @@ elif_call: %empty /*epsilon*/ {}
 else_call: %empty /*epsilon*/ {}
 	| ELSEBR L_CURL statements R_CURL {}
 
-comparison: term LESSER term {}
-	| term GREATER term {}
-	| term EQUALTO term {}
+comparison: term comp term {}
+
+comp: LESSER {}
+	| GREATER {}
+	| EQUALTO {}
 
 operation: L_PAR operation R_PAR {}
 	| term op term {}
@@ -163,12 +164,16 @@ op: PLUS {}
 	| DIV {}
 	| MOD {}
 
+declared_term: INTEGER IDENTIFIER array {}
+
+array: %empty /*epsilon*/ {}
+	| L_SQUARE term R_SQUARE {}
+
 term: %empty /*epsilon*/ {}
-	| IDENTIFIER { 
+	| IDENTIFIER array { 
 		printf("term -> IDENTIFIER\n");
 		$$ = $1; 
 	}
-	| IDENTIFIER L_SQUARE term R_SQUARE {}
 	| NUMBER {
 		printf("term -> NUMBER\n");
 		$$ = $1;

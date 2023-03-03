@@ -107,8 +107,7 @@ arguments: argument {}
 	| argument COMMA arguments {}
 
 argument: %empty /* epsilon */ {}
-	| INTEGER IDENTIFIER {}
-        | INTEGER IDENTIFIER L_SQUARE NUMBER R_SQUARE {}
+	| declared_term {}
 	| term {}
 
 statements: %empty /* epsilon */ {}

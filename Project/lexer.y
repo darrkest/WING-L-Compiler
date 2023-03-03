@@ -131,10 +131,9 @@ function_call: IDENTIFIER L_PAR arguments R_PAR {}
 assignment: IDENTIFIER EQUAL term SMCOL{}
 	| IDENTIFIER array EQUAL term SMCOL {}
 
-read_call: READ L_PAR IDENTIFIER R_PAR SMCOL {}
+read_call: READ L_PAR IDENTIFIER array R_PAR SMCOL {}
 
-write_call: WRITE L_PAR IDENTIFIER R_PAR SMCOL {}
-	| WRITE L_PAR IDENTIFIER array R_PAR SMCOL {}
+write_call: WRITE L_PAR IDENTIFIER array R_PAR SMCOL {}
 
 return_call: RETURN term SMCOL {}
 

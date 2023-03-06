@@ -141,15 +141,21 @@ argument: %empty /* epsilon */ {}
 	| declared_term {}
 	| term {}
 
-declared_term: INTEGER IDENTIFIER array {
-	std::string var_name = $2;
-	Type t = Integer;
+declared_term: INTEGER IDENTIFIER {
+		std::string var_name = $2;
+		Type t = Integer;
 	/*
 	add_variable_to_symbol_table(var_name, t);
 	*/
-	temp_add_to_symbol_table(var_name, t);
-	printf("variable %s\n", var_name.c_str());
-}
+		temp_add_to_symbol_table(var_name, t);
+		printf("variable %s\n", var_name.c_str());
+	}
+	| INTEGER IDENTIFIER array {
+		std::string var_name = $2;
+		Type t = Array;
+		temp_add_to_symbol_table(var_name, t);
+		printf("array %s\n", var_name.c_str());
+	}
 
 statements: %empty /* epsilon */ {}
 	| statement statements {}

@@ -12,11 +12,15 @@ char *identToken;
 int numberToken;
 int count_names = 0;
 
-enum Type { Integer, Array };
+enum Type { Integer, Array, Function };
 struct Symbol {
 	std::string name;
 	Type type;
 };
+
+std::vector<Symbol> symbol_table;
+
+/*
 struct Function {
 	std::string name;
 	std::vector<Symbol> declarations;
@@ -53,15 +57,40 @@ void add_variable_to_symbol_table(std::string &value, Type t) {
 	Function *f = get_function();
 	f->declarations.push_back(s);
 }
+*/
+
+bool find(std::string &value) {
+	Symbol s = symbol_table[symbol_table.size()-1];
+	for (int i = 0; i < symbol_table.size(); ++i) {
+		if (s.name == value) {
+			return true;
+		}
+	}
+}
+
+void temp_add_to_symbol_table(std::string &value, Type t) {
+	Symbol s;
+	s.name = value;
+	s.type = t;
+	symbol_table.push_back(s);	
+}
 
 void print_symbol_table(void) {
   printf("symbol table:\n");
   printf("--------------------\n");
   for(int i=0; i<symbol_table.size(); i++) {
-    printf("function: %s\n", symbol_table[i].name.c_str());
-    for(int j=0; j<symbol_table[i].declarations.size(); j++) {
-      printf("  locals: %s\n", symbol_table[i].declarations[j].name.c_str());
-    }
+    	printf("Symbol: %s", symbol_table[i].name.c_str());
+	std::string temp;
+	if (symbol_table[i].type == 0) {
+		temp = "Integer";
+	}
+	else if (symbol_table[i].type == 1) {
+		temp = "Array";
+	}
+	else if (symbol_table[i].type == 2) {
+		temp = "Function";
+	}
+     	printf(", type: %s\n", temp.c_str());
   }
   printf("--------------------\n");
 }
@@ -94,12 +123,14 @@ functions: %empty /* epsilon */ { printf("functions -> epsilon\n"); }
 
 function: FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {
 		std::string func_name = $2;
-		add_function_to_symbol_table(func_name);
+		Type t = Function;
+		temp_add_to_symbol_table(func_name,t);
 		printf("funct %s\n", func_name.c_str());
 	}
 	| FUNCTION IDENTIFIER L_CURL statements R_CURL {
 		std::string func_name = $2;
-		add_function_to_symbol_table(func_name);
+		Type t = Function;
+		temp_add_to_symbol_table(func_name,t);
 		printf("funct %s\n", func_name.c_str());
 	}
 
@@ -109,6 +140,16 @@ arguments: argument {}
 argument: %empty /* epsilon */ {}
 	| declared_term {}
 	| term {}
+
+declared_term: INTEGER IDENTIFIER array {
+	std::string var_name = $2;
+	Type t = Integer;
+	/*
+	add_variable_to_symbol_table(var_name, t);
+	*/
+	temp_add_to_symbol_table(var_name, t);
+	printf("variable %s\n", var_name.c_str());
+}
 
 statements: %empty /* epsilon */ {}
 	| statement statements {}
@@ -161,8 +202,6 @@ op: PLUS {}
 	| MULT {}
 	| DIV {}
 	| MOD {}
-
-declared_term: INTEGER IDENTIFIER array {}
 
 array: %empty /*epsilon*/ {}
 	| L_SQUARE term R_SQUARE {}

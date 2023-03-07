@@ -26,45 +26,6 @@ struct Symbol {
 
 std::vector<Symbol> symbol_table;
 
-/*
-struct Function {
-	std::string name;
-	std::vector<Symbol> declarations;
-};
-
-std::vector<Function> symbol_table;
-
-Function *get_function() {
-	int last = symbol_table.size()-1;
-	return &symbol_table[last];
-}
-
-bool find(std::string &value) {
-	Function *f = get_function();
-	for(int i = 0; i < f->declarations.size(); ++i) {
-		Symbol *s = &f->declarations[i];
-		if (s->name == value) {
-			return true;
-		}
-	}
-	return false;
-}
-
-void add_function_to_symbol_table(std::string &value) {
-	Function f;
-	f.name = value;
-	symbol_table.push_back(f);
-}
-
-void add_variable_to_symbol_table(std::string &value, Type t) {
-	Symbol s;
-	s.name = value;
-	s.type = t;
-	Function *f = get_function();
-	f->declarations.push_back(s);
-}
-*/
-
 bool find(std::string &value) {
 	Symbol s = symbol_table[symbol_table.size()-1];
 	for (int i = 0; i < symbol_table.size(); ++i) {
@@ -85,18 +46,16 @@ void print_symbol_table(void) {
   printf("symbol table:\n");
   printf("--------------------\n");
   for(int i=0; i<symbol_table.size(); i++) {
-    	printf("Symbol: %s", symbol_table[i].name.c_str());
 	std::string temp;
 	if (symbol_table[i].type == 0) {
-		temp = "Integer";
+		printf("   locals (int): %s\n", symbol_table[i].name.c_str());
 	}
 	else if (symbol_table[i].type == 1) {
-		temp = "Array";
+		printf("   locals (array): %s\n", symbol_table[i].name.c_str());
 	}
 	else if (symbol_table[i].type == 2) {
-		temp = "Function";
+		printf("function: %s\n", symbol_table[i].name.c_str());
 	}
-     	printf(", type: %s\n", temp.c_str());
   }
   printf("--------------------\n");
 }

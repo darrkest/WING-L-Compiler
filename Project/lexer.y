@@ -119,6 +119,7 @@ void print_symbol_table(void) {
 %token <op_val> NUMBER
 %token <op_val> IDENTIFIER
 %type <op_val> term
+%type <node> prog_start
 %type <node> functions 
 %type <node> function
 %type <node> arguments
@@ -129,70 +130,72 @@ void print_symbol_table(void) {
 %type <node> assignment
 %type <node> write_call
 %type <node> array
-%type <node> prog_start
 %%
 
-prog_start: %empty /* epsilon */ {}
+prog_start: %empty /* epsilon */ {
+		pritnf("prog_start -> epsilon\n");
+		CodeNode *node = new CodeNode();
+		$$ = node;
+	}
 	| functions { 
 		// TODO: Fix seg fault, probably happening because of stuff further in the grammar
 		printf("prog_start -> functions\n"); 
-	
-		//CodeNode *node = $1;
+		CodeNode *node = $1;
 		//printf("%s\n", node->code.c_str());
 	}
 
-functions: %empty /* epsilon */ { printf("functions -> epsilon\n"); }
+functions: %empty /* epsilon */ { 
+		printf("functions -> epsilon\n"); 
+		CodeNode *node = new CodeNode();
+		$$ = node;
+	}
 	| function functions { 
 		// TODO: Same as above
 		printf("functions -> function functions\n"); 
-		/*
 		CodeNode *node1 = $1;
 		CodeNode *node2 = $2;
-		CodeNode *node = new CodeNode;
+		CodeNode *node = new CodeNode();
 		node->code = node1->code + node2->code;
 		$$ = node;
-		*/
 	}
 
 function: FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {
 		// TODO: Fix seg fault, probably happening because of stuff further in the grammar
-		//CodeNode *node = new CodeNode;;
-		//CodeNode *arguments = $4;
-		//CodeNode *statements = $7;
+		CodeNode *node = new CodeNode();
+		CodeNode *arguments = $4;
+		CodeNode *statements = $7;
 	
 		std::string func_name = $2;
-		//node->code = "func " + func_name + arguments->code + statements->code;
+		node->code = "func " + func_name + arguments->code + statements->code;
 		Type t = Function;
 		temp_add_to_symbol_table(func_name,t);
 		printf("funct %s\n", func_name.c_str());
-		//$$ = node;
+		$$ = node;
 	}
 	| FUNCTION IDENTIFIER L_CURL statements R_CURL {
 		// TODO: Same as above
-		//CodeNode *node = new CodeNode;
-                //CodeNode *statements = $4;
+		CodeNode *node = new CodeNode();
+                CodeNode *statements = $4;
 		
 		std::string func_name = $2;
-                //node->code = "func " + func_name + statements->code;
+                node->code = "func " + func_name + statements->code;
 		Type t = Function;
 		temp_add_to_symbol_table(func_name,t);
 		printf("funct %s\n", func_name.c_str());
-		//$$ = node;
+		$$ = node;
 	}
 
 arguments: argument {}			
 	| argument COMMA arguments {
 		// TODO: Fix seg fault, happens when parameters are in function
-		/*
 		CodeNode *node1 = $1;
 		CodeNode *node2 = $3;
-		CodeNode *node = new CodeNode;
+		CodeNode *node = new CodeNode();
 		node->code = node1->code + node2->code;
 		$$ = node;
-		*/
 	}
 	| %empty {	
-		CodeNode *node = new CodeNode;
+		CodeNode *node = new CodeNode();
 		$$ = node;
 	}
 
@@ -201,7 +204,7 @@ argument: %empty /* epsilon */ {}
 	| term {}
 
 declared_term: INTEGER IDENTIFIER {	
-		CodeNode *node = new CodeNode;
+		CodeNode *node = new CodeNode();
 		std::string var_name = $2;
 		node->code = ". " + var_name + "\n";
 		Type t = Integer;
@@ -215,15 +218,15 @@ declared_term: INTEGER IDENTIFIER {
 	| INTEGER IDENTIFIER array {
 		// TODO: Fix seg fault, happens when array appears in file
 		
-		//CodeNode *node = new CodeNode;
-		//CodeNode *node1 = $3;
+		CodeNode *node = new CodeNode();
+		CodeNode *node1 = $3;
 		
 		std::string var_name = $2;
-		//node->code = ".[] " + var_name + ", " + node1->code; 
+		node->code = ".[] " + var_name + ", " + node1->code; 
 		Type t = Array;
 		temp_add_to_symbol_table(var_name, t);
 		printf("array %s\n", var_name.c_str());
-		//$$ = node;
+		$$ = node;
 	}
 
 statements: %empty /* epsilon */ {}
@@ -301,11 +304,9 @@ op: PLUS {}
 
 array: %empty /*epsilon*/ {}
 	| L_SQUARE term R_SQUARE {
-		/*
 		CodeNode *node = new CodeNode();
 		node->code = $2;  
 		$$ = node;		
-		*/
 	}
 
 term: %empty /*epsilon*/ {}

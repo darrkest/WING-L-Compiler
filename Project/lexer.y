@@ -288,7 +288,7 @@ array: %empty /*epsilon*/ {}
 	}
 
 term: %empty /*epsilon*/ {}
-	| IDENTIFIER { 
+	| IDENTIFIER array { 
 		printf("term -> IDENTIFIER\n");
 		$$ = $1; 
 	}

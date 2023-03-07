@@ -129,7 +129,6 @@ void print_symbol_table(void) {
 %type <node> statement
 %type <node> assignment
 %type <node> write_call
-%type <node> prog_start
 %%
 
 prog_start: %empty /* epsilon */ {

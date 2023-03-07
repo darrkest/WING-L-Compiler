@@ -1,5 +1,6 @@
 %{
 #include<string>
+#include<sstream>
 #include<vector>
 #include<string.h>
 #include <stdio.h>
@@ -7,6 +8,11 @@
 extern int yylex(void);
 void yyerror(const char *msg);
 extern int errorLine;
+
+struct CodeNode{
+        std::string code;
+        std::string name;
+};
 
 char *identToken;
 int numberToken;
@@ -99,6 +105,7 @@ void print_symbol_table(void) {
 
 %union {
 	char *op_val;
+	struct CodeNode* node;
 }
 %define parse.error verbose
 %start prog_start
@@ -112,49 +119,95 @@ void print_symbol_table(void) {
 %token <op_val> NUMBER
 %token <op_val> IDENTIFIER
 %type <op_val> term
-
+%type <node> functions 
+%type <node> function
+%type <node> arguments
+%type <node> argument
+%type <node> declared_term
+%type <node> statements
+%type <node> statement
+%type <node> assignment
+%type <node> write_call
+%type <node> array
 %%
 
 prog_start: %empty /* epsilon */ {}
-	| functions { printf("prog_start -> functions\n"); }
+	| functions { 
+		printf("prog_start -> functions\n"); 
+		CodeNode *node = $1;
+		//printf("%s\n", node->code.c_str());
+	}
 
 functions: %empty /* epsilon */ { printf("functions -> epsilon\n"); }
-	| function functions { printf("functions -> function functions\n"); }
+	| function functions { 
+		printf("functions -> function functions\n"); 
+		CodeNode *node1 = $1;
+		CodeNode *node2 = $2;
+		CodeNode *node = new CodeNode;
+		node->code = node1->code + node2->code;
+		$$ = node;
+	}
 
 function: FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {
+		CodeNode *node = new CodeNode;;
+		CodeNode *arguments = $4;
+		CodeNode *statements = $7;
 		std::string func_name = $2;
+		node->code = "func " + func_name + arguments->code + statements->code;
 		Type t = Function;
 		temp_add_to_symbol_table(func_name,t);
 		printf("funct %s\n", func_name.c_str());
+		$$ = node;
 	}
 	| FUNCTION IDENTIFIER L_CURL statements R_CURL {
+		CodeNode *node = new CodeNode;
+                CodeNode *statements = $4;
 		std::string func_name = $2;
+                node->code = "func " + func_name + statements->code;
 		Type t = Function;
 		temp_add_to_symbol_table(func_name,t);
 		printf("funct %s\n", func_name.c_str());
+		$$ = node;
 	}
 
 arguments: argument {}
-	| argument COMMA arguments {}
+	| argument COMMA arguments {
+		CodeNode *node1 = $1;
+		CodeNode *node2 = $3;
+		CodeNode *node = new CodeNode;
+		node->code = node1->code + node2->code;
+		$$ = node;
+	}
+	| %empty {
+		CodeNode *node = new CodeNode;
+		$$ = node;
+	}
 
 argument: %empty /* epsilon */ {}
 	| declared_term {}
 	| term {}
 
-declared_term: INTEGER IDENTIFIER {
+declared_term: INTEGER IDENTIFIER SMCOL {
+		CodeNode *node = new CodeNode;
 		std::string var_name = $2;
+		node->code = ". " + var_name + "\n";
 		Type t = Integer;
 	/*
 	add_variable_to_symbol_table(var_name, t);
 	*/
 		temp_add_to_symbol_table(var_name, t);
 		printf("variable %s\n", var_name.c_str());
+		$$ = node;
 	}
-	| INTEGER IDENTIFIER array {
+	| INTEGER IDENTIFIER array SMCOL {
+		CodeNode *node = new CodeNode;
+		CodeNode *node1 = $3;
 		std::string var_name = $2;
+		node->code = ".[] " + var_name + ", " + node1->code; 
 		Type t = Array;
 		temp_add_to_symbol_table(var_name, t);
 		printf("array %s\n", var_name.c_str());
+		$$ = node;
 	}
 
 statements: %empty /* epsilon */ {}
@@ -175,12 +228,30 @@ declaration: declared_term SMCOL{}
 
 function_call: IDENTIFIER L_PAR arguments R_PAR {}
 
-assignment: IDENTIFIER EQUAL term SMCOL{}
+assignment: IDENTIFIER EQUAL term SMCOL{
+		std::string ident = $1;
+		CodeNode *node = new CodeNode();
+		node->code = "= " + ident + ", " + $3 + "\n";
+		$$ = node;
+	}
 	| IDENTIFIER array EQUAL term SMCOL {}
 
 read_call: READ L_PAR IDENTIFIER array R_PAR SMCOL {}
 
-write_call: WRITE L_PAR IDENTIFIER array R_PAR SMCOL {}
+write_call: WRITE L_PAR IDENTIFIER array R_PAR SMCOL {
+		printf("write_call -> WRITE L_PAR IDENTIFIER array R_PAR SMCOL\n");
+                std::string ident = $3;
+                CodeNode *node = new CodeNode();
+                node->code = ".> " + ident + "\n";
+                $$ = node;
+	}
+	| WRITE L_PAR IDENTIFIER R_PAR SMCOL {
+		printf("write_call -> WRITE L_PAR IDENTIFIER R_PAR SMCOL\n");
+		std::string ident = $3;
+		CodeNode *node = new CodeNode();
+		node->code = ".> " + ident + "\n";
+		$$ = node;  
+	}
 
 return_call: RETURN term SMCOL {}
 
@@ -210,10 +281,14 @@ op: PLUS {}
 	| MOD {}
 
 array: %empty /*epsilon*/ {}
-	| L_SQUARE term R_SQUARE {}
+	| L_SQUARE term R_SQUARE {
+		CodeNode *node = new CodeNode();
+		node->code = $2;  
+		$$ = node;		
+	}
 
 term: %empty /*epsilon*/ {}
-	| IDENTIFIER array { 
+	| IDENTIFIER { 
 		printf("term -> IDENTIFIER\n");
 		$$ = $1; 
 	}

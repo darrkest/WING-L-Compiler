@@ -128,7 +128,6 @@ void print_symbol_table(void) {
 %type <node> statement
 %type <node> assignment
 %type <node> write_call
-%type <node> array
 %type <node> prog_start
 %%
 
@@ -205,25 +204,19 @@ declared_term: INTEGER IDENTIFIER {
 		std::string var_name = $2;
 		node->code = ". " + var_name + "\n";
 		Type t = Integer;
-	/*
-	add_variable_to_symbol_table(var_name, t);
-	*/
 		temp_add_to_symbol_table(var_name, t);
 		printf("variable %s\n", var_name.c_str());
 		$$ = node;
 	}
-	| INTEGER IDENTIFIER array {
-		// TODO: Fix seg fault, happens when array appears in file
-		
-		//CodeNode *node = new CodeNode;
-		//CodeNode *node1 = $3;
-		
+	| INTEGER IDENTIFIER L_SQUARE term R_SQUARE {
+		CodeNode *node = new CodeNode;	
 		std::string var_name = $2;
-		//node->code = ".[] " + var_name + ", " + node1->code; 
+		std::string arrNum = $4;
+		node->code = ".[] " + var_name + ", " + arrNum; 
 		Type t = Array;
 		temp_add_to_symbol_table(var_name, t);
 		printf("array %s\n", var_name.c_str());
-		//$$ = node;
+		$$ = node;
 	}
 
 statements: %empty /* epsilon */ {}
@@ -251,14 +244,16 @@ assignment: IDENTIFIER EQUAL term SMCOL{
 		node->code = "= " + ident + ", " + $3 + "\n";
 		$$ = node;
 	}
-	| IDENTIFIER array EQUAL term SMCOL {}
+	| IDENTIFIER L_SQUARE term R_SQUARE EQUAL term SMCOL {}
 
-read_call: READ L_PAR IDENTIFIER array R_PAR SMCOL {}
+read_call: READ L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {}
+	| READ L_PAR IDENTIFIER R_PAR SMCOL {}
 
-write_call: WRITE L_PAR IDENTIFIER array R_PAR SMCOL {
-		printf("write_call -> WRITE L_PAR IDENTIFIER array R_PAR SMCOL\n");
+write_call: WRITE L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {
+		// This should output a temp because of array
+		printf("write_call -> WRITE L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL\n");
                 std::string ident = $3;
-                
+                std::string arrNum = $5;
 		CodeNode *node = new CodeNode();
                 node->code = ".> " + ident + "\n";
                 $$ = node;
@@ -299,19 +294,13 @@ op: PLUS {}
 	| DIV {}
 	| MOD {}
 
-array: %empty /*epsilon*/ {}
-	| L_SQUARE term R_SQUARE {
-		/*
-		CodeNode *node = new CodeNode();
-		node->code = $2;  
-		$$ = node;		
-		*/
-	}
-
 term: %empty /*epsilon*/ {}
-	| IDENTIFIER array { 
+	| IDENTIFIER { 
 		printf("term -> IDENTIFIER\n");
 		$$ = $1; 
+	}
+	| IDENTIFIER L_SQUARE term R_SQUARE {
+		$$ = $1;
 	}
 	| NUMBER {
 		printf("term -> NUMBER\n");

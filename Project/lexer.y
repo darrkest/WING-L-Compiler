@@ -129,56 +129,69 @@ void print_symbol_table(void) {
 %type <node> assignment
 %type <node> write_call
 %type <node> array
+%type <node> prog_start
 %%
 
 prog_start: %empty /* epsilon */ {}
 	| functions { 
+		// TODO: Fix seg fault, probably happening because of stuff further in the grammar
 		printf("prog_start -> functions\n"); 
-		CodeNode *node = $1;
+	
+		//CodeNode *node = $1;
 		//printf("%s\n", node->code.c_str());
 	}
 
 functions: %empty /* epsilon */ { printf("functions -> epsilon\n"); }
 	| function functions { 
+		// TODO: Same as above
 		printf("functions -> function functions\n"); 
+		/*
 		CodeNode *node1 = $1;
 		CodeNode *node2 = $2;
 		CodeNode *node = new CodeNode;
 		node->code = node1->code + node2->code;
 		$$ = node;
+		*/
 	}
 
 function: FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {
-		CodeNode *node = new CodeNode;;
-		CodeNode *arguments = $4;
-		CodeNode *statements = $7;
+		// TODO: Fix seg fault, probably happening because of stuff further in the grammar
+		//CodeNode *node = new CodeNode;;
+		//CodeNode *arguments = $4;
+		//CodeNode *statements = $7;
+	
 		std::string func_name = $2;
-		node->code = "func " + func_name + arguments->code + statements->code;
+		//node->code = "func " + func_name + arguments->code + statements->code;
 		Type t = Function;
 		temp_add_to_symbol_table(func_name,t);
 		printf("funct %s\n", func_name.c_str());
-		$$ = node;
+		//$$ = node;
 	}
 	| FUNCTION IDENTIFIER L_CURL statements R_CURL {
-		CodeNode *node = new CodeNode;
-                CodeNode *statements = $4;
+		// TODO: Same as above
+		//CodeNode *node = new CodeNode;
+                //CodeNode *statements = $4;
+		
 		std::string func_name = $2;
-                node->code = "func " + func_name + statements->code;
+                //node->code = "func " + func_name + statements->code;
 		Type t = Function;
 		temp_add_to_symbol_table(func_name,t);
 		printf("funct %s\n", func_name.c_str());
-		$$ = node;
+		//$$ = node;
 	}
 
-arguments: argument {}
+arguments: argument {}			
 	| argument COMMA arguments {
+		// TODO: Fix seg fault, happens when parameters are in function
+		/*
 		CodeNode *node1 = $1;
 		CodeNode *node2 = $3;
 		CodeNode *node = new CodeNode;
 		node->code = node1->code + node2->code;
 		$$ = node;
+		*/
 	}
-	| %empty {
+	| %empty {	
 		CodeNode *node = new CodeNode;
 		$$ = node;
 	}
@@ -187,7 +200,7 @@ argument: %empty /* epsilon */ {}
 	| declared_term {}
 	| term {}
 
-declared_term: INTEGER IDENTIFIER {
+declared_term: INTEGER IDENTIFIER {	
 		CodeNode *node = new CodeNode;
 		std::string var_name = $2;
 		node->code = ". " + var_name + "\n";
@@ -200,14 +213,17 @@ declared_term: INTEGER IDENTIFIER {
 		$$ = node;
 	}
 	| INTEGER IDENTIFIER array {
-		CodeNode *node = new CodeNode;
-		CodeNode *node1 = $3;
+		// TODO: Fix seg fault, happens when array appears in file
+		
+		//CodeNode *node = new CodeNode;
+		//CodeNode *node1 = $3;
+		
 		std::string var_name = $2;
-		node->code = ".[] " + var_name + ", " + node1->code; 
+		//node->code = ".[] " + var_name + ", " + node1->code; 
 		Type t = Array;
 		temp_add_to_symbol_table(var_name, t);
 		printf("array %s\n", var_name.c_str());
-		$$ = node;
+		//$$ = node;
 	}
 
 statements: %empty /* epsilon */ {}
@@ -230,6 +246,7 @@ function_call: IDENTIFIER L_PAR arguments R_PAR {}
 
 assignment: IDENTIFIER EQUAL term SMCOL{
 		std::string ident = $1;
+		
 		CodeNode *node = new CodeNode();
 		node->code = "= " + ident + ", " + $3 + "\n";
 		$$ = node;
@@ -241,13 +258,15 @@ read_call: READ L_PAR IDENTIFIER array R_PAR SMCOL {}
 write_call: WRITE L_PAR IDENTIFIER array R_PAR SMCOL {
 		printf("write_call -> WRITE L_PAR IDENTIFIER array R_PAR SMCOL\n");
                 std::string ident = $3;
-                CodeNode *node = new CodeNode();
+                
+		CodeNode *node = new CodeNode();
                 node->code = ".> " + ident + "\n";
                 $$ = node;
 	}
 	| WRITE L_PAR IDENTIFIER R_PAR SMCOL {
 		printf("write_call -> WRITE L_PAR IDENTIFIER R_PAR SMCOL\n");
 		std::string ident = $3;
+
 		CodeNode *node = new CodeNode();
 		node->code = ".> " + ident + "\n";
 		$$ = node;  
@@ -282,9 +301,11 @@ op: PLUS {}
 
 array: %empty /*epsilon*/ {}
 	| L_SQUARE term R_SQUARE {
+		/*
 		CodeNode *node = new CodeNode();
 		node->code = $2;  
 		$$ = node;		
+		*/
 	}
 
 term: %empty /*epsilon*/ {}

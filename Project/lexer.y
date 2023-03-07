@@ -125,6 +125,7 @@ void print_symbol_table(void) {
 %type <node> arguments
 %type <node> argument
 %type <node> declared_term
+%type <node> declaration
 %type <node> statements
 %type <node> statement
 %type <node> assignment
@@ -133,59 +134,36 @@ void print_symbol_table(void) {
 %%
 
 prog_start: %empty /* epsilon */ {}
-	| functions { 
-		// TODO: Fix seg fault, probably happening because of stuff further in the grammar
-		printf("prog_start -> functions\n"); 
-		//CodeNode *node = $1;
-		//printf("%s\n", node->code.c_str());
-	}
+	| functions {}
 
 functions: %empty /* epsilon */ {}
-	| function functions { 
-		// TODO: Same as above
-		printf("functions -> function functions\n"); 
-		//CodeNode *node1 = $1;
-		//CodeNode *node2 = $2;
-		//CodeNode *node = new CodeNode();
-		//node->code = node1->code + node2->code;
-		//$$ = node;
-	}
+	| function functions {}
 
-function: FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {
-		// TODO: Fix seg fault, probably happening because of stuff further in the grammar
-		//CodeNode *node = new CodeNode();
-		//CodeNode *arguments = $4;
-		//CodeNode *statements = $7;
-	
-		std::string func_name = $2;
-		//node->code = "func " + func_name + arguments->code + statements->code;
+function: FUNCTION IDENTIFIER 
+	{
+		std::string func_name $2;
 		Type t = Function;
-		temp_add_to_symbol_table(func_name,t);
-		printf("funct %s\n", func_name.c_str());
-		//$$ = node;
-	}
-	| FUNCTION IDENTIFIER L_CURL statements R_CURL {
-		// TODO: Same as above
-		//CodeNode *node = new CodeNode();
-                //CodeNode *statements = $4;
+                temp_add_to_symbol_table(func_name,t);
+		printf("func %s\n", func_name.c_str());
 		
-		std::string func_name = $2;
-                //node->code = "func " + func_name + statements->code;
-		Type t = Function;
-		temp_add_to_symbol_table(func_name,t);
-		printf("funct %s\n", func_name.c_str());
-		//$$ = node;
+	}	
+	  L_PAR arguments R_PAR L_CURL statements R_CURL {
+		printf("endfunc\n");	
+	}
+	| FUNCTION IDENTIFIER 
+	{
+		std::string func_name $2;
+                Type t = Function;
+                temp_add_to_symbol_table(func_name,t);
+                printf("func %s\n", func_name.c_str());
+
+	}
+	  L_CURL statements R_CURL {
+		printf("endfunc\n");
 	}
 
 arguments: argument {}			
-	| argument COMMA arguments {
-		// TODO: Fix seg fault, happens when parameters are in function
-		//CodeNode *node1 = $1;
-		//CodeNode *node2 = $3;
-		//CodeNode *node = new CodeNode();
-		//node->code = node1->code + node2->code;
-		//$$ = node;
-	}
+	| argument COMMA arguments {}
 	| %empty {	
 		CodeNode *node = new CodeNode();
 		$$ = node;
@@ -219,8 +197,19 @@ declared_term: INTEGER IDENTIFIER {
 		printf(".[] %s, %s", var_name.c_str(), arrNum.c_str());
 	}
 
-statements: %empty /* epsilon */ {}
-	| statement statements {}
+statements: %empty /* epsilon */ {
+		CodeNode *node = new CodeNode();
+		node->code = "";
+		$$ = node;
+	}
+	| statement statements {
+		CodeNode *node = new CodeNode();
+                CodeNode *node1 = $1;
+                CodeNode *node2 = $2;
+		node->code = "";
+                node->code = node1->code + node2->code;
+                $$ = node;
+	}
 
 statement: declaration {}
         | function_call {}
@@ -233,7 +222,11 @@ statement: declaration {}
 	| elif_call {}
 	| else_call {}
 	
-declaration: declared_term SMCOL{}
+declaration: declared_term SMCOL{
+	CodeNode *node = new CodeNode();
+	node->code = "";
+	$$ = node;
+}
 
 function_call: IDENTIFIER L_PAR arguments R_PAR {}
 
@@ -270,7 +263,6 @@ write_call: WRITE L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {
                 $$ = node;
 	}
 	| WRITE L_PAR IDENTIFIER R_PAR SMCOL {
-		//printf("write_call -> WRITE L_PAR IDENTIFIER R_PAR SMCOL\n");
 		std::string ident = $3;
 
 		CodeNode *node = new CodeNode();

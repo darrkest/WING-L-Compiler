@@ -187,7 +187,7 @@ argument: %empty /* epsilon */ {}
 	| declared_term {}
 	| term {}
 
-declared_term: INTEGER IDENTIFIER SMCOL {
+declared_term: INTEGER IDENTIFIER {
 		CodeNode *node = new CodeNode;
 		std::string var_name = $2;
 		node->code = ". " + var_name + "\n";
@@ -199,7 +199,7 @@ declared_term: INTEGER IDENTIFIER SMCOL {
 		printf("variable %s\n", var_name.c_str());
 		$$ = node;
 	}
-	| INTEGER IDENTIFIER array SMCOL {
+	| INTEGER IDENTIFIER array {
 		CodeNode *node = new CodeNode;
 		CodeNode *node1 = $3;
 		std::string var_name = $2;

@@ -286,13 +286,11 @@ comp: LESSER {}
 	| EQUALTO {}
 
 operation: L_PAR operation R_PAR {}
-	| term op term {}
-
-op: PLUS {}
-	| MINUS {}
-	| MULT {}
-	| DIV {}
-	| MOD {}
+	| term PLUS term {}
+	| term MINUS term {}
+	| term DIV term {}
+	| term MULT term {}
+	| term MOD term {}
 
 term: %empty /*epsilon*/ {}
 	| IDENTIFIER { 

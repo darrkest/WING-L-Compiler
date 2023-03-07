@@ -246,7 +246,16 @@ assignment: IDENTIFIER EQUAL term SMCOL{
 		
 		printf("= %s, %s\n", ident.c_str(), assigned.c_str());
 	}
-	| IDENTIFIER L_SQUARE term R_SQUARE EQUAL term SMCOL {}
+	| IDENTIFIER L_SQUARE term R_SQUARE EQUAL term SMCOL {
+		std::string ident = $1;
+		std::string arrNum = $3;
+		std::string assigned = $6;
+		CodeNode *node = new CodeNode();
+		node->code = "[]= " + ident + ", " + arrNum + ", " +  assigned + "\n";
+		$$ = node;
+		
+		printf("[]= %s, %s, %s\n", ident.c_str(), arrNum.c_str(), assigned.c_str());
+	}
 
 read_call: READ L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {}
 	| READ L_PAR IDENTIFIER R_PAR SMCOL {}

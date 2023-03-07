@@ -201,8 +201,10 @@ declared_term: INTEGER IDENTIFIER {
 		node->code = ". " + var_name + "\n";
 		Type t = Integer;
 		temp_add_to_symbol_table(var_name, t);
-		printf("variable %s\n", var_name.c_str());
+		//printf("variable %s\n", var_name.c_str());
 		$$ = node;
+
+		printf(". %s\n", var_name.c_str());
 	}
 	| INTEGER IDENTIFIER L_SQUARE term R_SQUARE {
 		CodeNode *node = new CodeNode;	
@@ -211,8 +213,10 @@ declared_term: INTEGER IDENTIFIER {
 		node->code = ".[] " + var_name + ", " + arrNum; 
 		Type t = Array;
 		temp_add_to_symbol_table(var_name, t);
-		printf("array %s\n", var_name.c_str());
+		//printf("array %s\n", var_name.c_str());
 		$$ = node;
+
+		printf(".[] %s, %s", var_name.c_str(), arrNum.c_str());
 	}
 
 statements: %empty /* epsilon */ {}
@@ -235,10 +239,12 @@ function_call: IDENTIFIER L_PAR arguments R_PAR {}
 
 assignment: IDENTIFIER EQUAL term SMCOL{
 		std::string ident = $1;
-		
+		std::string assigned = $3;
 		CodeNode *node = new CodeNode();
-		node->code = "= " + ident + ", " + $3 + "\n";
+		node->code = "= " + ident + ", " + assigned + "\n";
 		$$ = node;
+		
+		printf("= %s, %s\n", ident.c_str(), assigned.c_str());
 	}
 	| IDENTIFIER L_SQUARE term R_SQUARE EQUAL term SMCOL {}
 
@@ -255,12 +261,14 @@ write_call: WRITE L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {
                 $$ = node;
 	}
 	| WRITE L_PAR IDENTIFIER R_PAR SMCOL {
-		printf("write_call -> WRITE L_PAR IDENTIFIER R_PAR SMCOL\n");
+		//printf("write_call -> WRITE L_PAR IDENTIFIER R_PAR SMCOL\n");
 		std::string ident = $3;
 
 		CodeNode *node = new CodeNode();
 		node->code = ".> " + ident + "\n";
 		$$ = node;  
+
+		printf(".> %s\n", ident.c_str());
 	}
 
 return_call: RETURN term SMCOL {}
@@ -290,14 +298,14 @@ operation: L_PAR operation R_PAR {}
 
 term: %empty /*epsilon*/ {}
 	| IDENTIFIER { 
-		printf("term -> IDENTIFIER\n");
+		//printf("term -> IDENTIFIER\n");
 		$$ = $1; 
 	}
 	| IDENTIFIER L_SQUARE term R_SQUARE {
 		$$ = $1;
 	}
 	| NUMBER {
-		printf("term -> NUMBER\n");
+		//printf("term -> NUMBER\n");
 		$$ = $1;
 	}
 	| function_call{}

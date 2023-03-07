@@ -60,6 +60,14 @@ void print_symbol_table(void) {
   printf("--------------------\n");
 }
 
+int global_variable_counter = 0;
+
+std::string make_temp() {
+	std::ostringstream os;
+	os << "_temp" << global_variable_counter++;
+	return os.str();
+}
+
 %}
 
 %union {
@@ -78,6 +86,9 @@ void print_symbol_table(void) {
 %token <op_val> NUMBER
 %token <op_val> IDENTIFIER
 %type <op_val> term
+%type <op_val> operation
+%type <op_val> multiplicative_operation
+%type <node> assignment
 %type <node> prog_start
 %type <node> functions 
 %type <node> function
@@ -87,7 +98,6 @@ void print_symbol_table(void) {
 %type <node> declaration
 %type <node> statements
 %type <node> statement
-%type <node> assignment
 %type <node> write_call
 
 %%
@@ -189,7 +199,7 @@ declaration: declared_term SMCOL{
 
 function_call: IDENTIFIER L_PAR arguments R_PAR {}
 
-assignment: IDENTIFIER EQUAL term SMCOL{
+assignment: IDENTIFIER EQUAL operation SMCOL{
 		std::string ident = $1;
 		std::string assigned = $3;
 		CodeNode *node = new CodeNode();
@@ -198,7 +208,7 @@ assignment: IDENTIFIER EQUAL term SMCOL{
 		
 		printf("= %s, %s\n", ident.c_str(), assigned.c_str());
 	}
-	| IDENTIFIER L_SQUARE term R_SQUARE EQUAL term SMCOL {
+	| IDENTIFIER L_SQUARE term R_SQUARE EQUAL operation SMCOL {
 		std::string ident = $1;
 		std::string arrNum = $3;
 		std::string assigned = $6;
@@ -250,11 +260,64 @@ comp: LESSER {}
 	| EQUALTO {}
 
 operation: L_PAR operation R_PAR {}
-	| term PLUS term {}
-	| term MINUS term {}
-	| term DIV term {}
-	| term MULT term {}
-	| term MOD term {}
+	| multiplicative_operation PLUS multiplicative_operation {
+		CodeNode *node = new CodeNode();
+		std::string temp = make_temp();
+		std::string lhs = $1;
+		std::string rhs = $3;
+		node->code = ". " + temp + "\n";
+		printf(". %s\n", temp.c_str());
+		node->code = "* " + temp + ", " + lhs + ", " + rhs + "\n";
+		printf("+ %s, %s, %s\n", temp.c_str(), lhs.c_str(), rhs.c_str());
+	}
+	| multiplicative_operation MINUS multiplicative_operation {
+		CodeNode *node = new CodeNode();
+                std::string temp = make_temp();
+                std::string lhs = $1;
+                std::string rhs = $3;
+                node->code = ". " + temp + "\n";
+                printf(". %s\n", temp.c_str());
+                node->code = "* " + temp + ", " + lhs + ", " + rhs + "\n";
+                printf("- %s, %s, %s\n", temp.c_str(), lhs.c_str(), rhs.c_str());
+	}
+	| multiplicative_operation {
+		$$ = $1;
+	}
+
+multiplicative_operation: term {
+		CodeNode *node = new CodeNode();
+		$$ = $1;	
+	}
+	| term MULT term {
+		CodeNode *node = new CodeNode();
+		std::string temp = make_temp();
+                std::string lhs = $1;
+                std::string rhs = $3;
+                node->code = ". " + temp + "\n";
+                printf(". %s\n", temp.c_str());
+                node->code = "* " + temp + ", " + lhs + ", " + rhs + "\n";
+                printf("* %s, %s, %s\n", temp.c_str(), lhs.c_str(), rhs.c_str());
+	}
+	| term DIV term {
+		CodeNode *node = new CodeNode();
+                std::string temp = make_temp();
+                std::string lhs = $1;
+                std::string rhs = $3;
+                node->code = ". " + temp + "\n";
+                printf(". %s\n", temp.c_str());
+                node->code = "* " + temp + ", " + lhs + ", " + rhs + "\n";
+                printf("/ %s, %s, %s\n", temp.c_str(), lhs.c_str(), rhs.c_str());
+	}
+	| term MOD term {
+		CodeNode *node = new CodeNode();
+                std::string temp = make_temp();
+                std::string lhs = $1;
+                std::string rhs = $3;
+                node->code = ". " + temp + "\n";
+                printf(". %s\n", temp.c_str());
+                node->code = "* " + temp + ", " + lhs + ", " + rhs + "\n";
+                printf("% %s, %s, %s\n", temp.c_str(), lhs.c_str(), rhs.c_str());
+	}
 
 term: %empty /*epsilon*/ {}
 	| IDENTIFIER { 
@@ -269,7 +332,6 @@ term: %empty /*epsilon*/ {}
 		$$ = $1;
 	}
 	| function_call{}
-	| operation{}
 
 %%
 

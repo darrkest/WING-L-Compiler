@@ -129,11 +129,7 @@ void print_symbol_table(void) {
 %type <node> statement
 %type <node> assignment
 %type <node> write_call
-<<<<<<< HEAD
-%type <node> array
-=======
 %type <node> prog_start
->>>>>>> nceba003
 %%
 
 prog_start: %empty /* epsilon */ {
@@ -216,22 +212,11 @@ declared_term: INTEGER IDENTIFIER {
 		printf("variable %s\n", var_name.c_str());
 		$$ = node;
 	}
-<<<<<<< HEAD
-	| INTEGER IDENTIFIER array {
-		// TODO: Fix seg fault, happens when array appears in file
-		
-		CodeNode *node = new CodeNode();
-		CodeNode *node1 = $3;
-		
-		std::string var_name = $2;
-		node->code = ".[] " + var_name + ", " + node1->code; 
-=======
 	| INTEGER IDENTIFIER L_SQUARE term R_SQUARE {
 		CodeNode *node = new CodeNode;	
 		std::string var_name = $2;
 		std::string arrNum = $4;
 		node->code = ".[] " + var_name + ", " + arrNum; 
->>>>>>> nceba003
 		Type t = Array;
 		temp_add_to_symbol_table(var_name, t);
 		printf("array %s\n", var_name.c_str());
@@ -305,28 +290,11 @@ comp: LESSER {}
 	| EQUALTO {}
 
 operation: L_PAR operation R_PAR {}
-<<<<<<< HEAD
-	| term op term {}
-
-op: PLUS {}
-	| MINUS {}
-	| MULT {}
-	| DIV {}
-	| MOD {}
-
-array: %empty /*epsilon*/ {}
-	| L_SQUARE term R_SQUARE {
-		CodeNode *node = new CodeNode();
-		node->code = $2;  
-		$$ = node;		
-	}
-=======
 	| term PLUS term {}
 	| term MINUS term {}
 	| term DIV term {}
 	| term MULT term {}
 	| term MOD term {}
->>>>>>> nceba003
 
 term: %empty /*epsilon*/ {}
 	| IDENTIFIER { 

@@ -133,7 +133,7 @@ void print_symbol_table(void) {
 %%
 
 prog_start: %empty /* epsilon */ {
-		pritnf("prog_start -> epsilon\n");
+		printf("prog_start -> epsilon\n");
 		CodeNode *node = new CodeNode();
 		$$ = node;
 	}

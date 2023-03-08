@@ -85,15 +85,9 @@ std::string make_temp() {
 %token READ WRITE
 %token <op_val> NUMBER
 %token <op_val> IDENTIFIER
-<<<<<<< HEAD
-%type <node> term
-%type <node> operation
-%type <node> multiplicative_operation
-=======
 %type <op_val> term
 %type <op_val> operation
 %type <op_val> multiplicative_operation
->>>>>>> abe3a278585a4ecb2e737741070d2f5b51aad52c
 %type <node> return_call
 %type <node> assignment
 %type <node> prog_start
@@ -135,7 +129,7 @@ function: FUNCTION IDENTIFIER
 
 	}
 	  L_CURL statements R_CURL {
-		printf("endfunc\n \n");
+		printf("endfunc\n");
 	}
 
 arguments: argument {}			
@@ -148,7 +142,7 @@ arguments: argument {}
 argument: %empty /* epsilon */ {}
 	| declared_term {}
 	| term {}
-	| operation {}
+
 declared_term: INTEGER IDENTIFIER {	
 		CodeNode *node = new CodeNode();
 		std::string var_name = $2;
@@ -163,28 +157,26 @@ declared_term: INTEGER IDENTIFIER {
 	| INTEGER IDENTIFIER L_SQUARE term R_SQUARE {
 		CodeNode *node = new CodeNode;	
 		std::string var_name = $2;
-		CodeNode *arrNum = $4;
-		node->code = ".[] " + var_name + ", " + arrNum->code; 
+		std::string arrNum = $4;
+		node->code = ".[] " + var_name + ", " + arrNum; 
 		Type t = Array;
 		temp_add_to_symbol_table(var_name, t);
 		//printf("array %s\n", var_name.c_str());
 		$$ = node;
 
-<<<<<<< HEAD
-		printf(".[] %s, %s", var_name.c_str(), arrNum->code.c_str());
-=======
-		printf(".[] %s, %s\n", var_name.c_str(), arrNum.c_str());
->>>>>>> abe3a278585a4ecb2e737741070d2f5b51aad52c
+		printf(".[] %s, %s", var_name.c_str(), arrNum.c_str());
 	}
 
 statements: %empty /* epsilon */ {
 		CodeNode *node = new CodeNode();
+		node->code = "";
 		$$ = node;
 	}
 	| statement statements {
 		CodeNode *node = new CodeNode();
                 CodeNode *node1 = $1;
                 CodeNode *node2 = $2;
+		node->code = "";
                 node->code = node1->code + node2->code;
                 $$ = node;
 	}
@@ -193,18 +185,8 @@ statement: declaration {}
         | function_call {}
 	| assignment {}
 	| read_call   {}
-	| write_call {
-		CodeNode *node = new CodeNode();
-		CodeNode *node1 = $1;
-		node->code = node1->code;
-		$$ = node;
-	}
-	| return_call {
-		CodeNode *node = new CodeNode();
-		CodeNode *node1 = $1;
-		node->code = node1->code;
-		$$ = node;
-	}
+	| write_call {}
+	| return_call {}
 	| while_call {}
 	| if_call {}
 	| elif_call {}
@@ -216,58 +198,72 @@ declaration: declared_term SMCOL{
 	$$ = node;
 }
 
-function_call: IDENTIFIER L_PAR arguments R_PAR {
-/*		std::string arg = $3;
-		CodeNode *node = new CodeNode();
-		node ->code = "param " arg + "\n";
-	//	$$ = node;
-		printf("param %s\n", arg.c_str()); */
-	}
+function_call: IDENTIFIER L_PAR arguments R_PAR {}
+
 assignment: IDENTIFIER EQUAL operation SMCOL{
 		std::string ident = $1;
-		CodeNode *assigned = $3;
+		std::string assigned = $3;
 		CodeNode *node = new CodeNode();
-		node->code = "= " + ident + ", " + assigned->code + "\n";
-		$$ = node;	
-		printf("= %s, %s\n", ident.c_str(), assigned->code.c_str());
+		node->code = "= " + ident + ", " + assigned + "\n";
+		$$ = node;
+		
+		printf("= %s, %s\n", ident.c_str(), assigned.c_str());
 	}
 	| IDENTIFIER L_SQUARE term R_SQUARE EQUAL operation SMCOL {
 		std::string ident = $1;
-		CodeNode *arrNum = $3;
-		CodeNode *assigned = $6;
+		std::string arrNum = $3;
+		std::string assigned = $6;
 		CodeNode *node = new CodeNode();
-		node->code = "[]= " + ident + ", " + arrNum->code + ", " +  assigned->code + "\n";
+		node->code = "[]= " + ident + ", " + arrNum + ", " +  assigned + "\n";
 		$$ = node;
 		
-		printf("[]= %s, %s, %s\n", ident.c_str(), arrNum->code.c_str(), assigned->code.c_str());
+		printf("[]= %s, %s, %s\n", ident.c_str(), arrNum.c_str(), assigned.c_str());
 	}
-
-read_call: READ L_PAR term R_PAR SMCOL {}
-
-write_call: WRITE L_PAR term R_PAR SMCOL {
-		CodeNode *ident = $3;
+/*	| IDENTIFIER EQUAL function_call SMCOL {
+		std::string ident = $1;
+		std::string funct = $3;
 		CodeNode *node = new CodeNode();
-                node->code = ".> " + ident->code + "\n";
+		node->code = "= " + ident + ", " + funct + "\n";
+		$$ = node;
+		printf("= %s, %s\n", ident.c_str(), funct.c_str());
+	}
+*/
+read_call: READ L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {}
+	| READ L_PAR IDENTIFIER R_PAR SMCOL {}
+
+write_call: WRITE L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {
+		// This should output a temp because of array
+		printf("write_call -> WRITE L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL\n");
+                std::string ident = $3;
+                std::string arrNum = $5;
+		CodeNode *node = new CodeNode();
+                node->code = ".> " + ident + "\n";
                 $$ = node;
 	}
+	| WRITE L_PAR IDENTIFIER R_PAR SMCOL {
+		std::string ident = $3;
 
-return_call: RETURN operation SMCOL {
-		CodeNode *ident = $2;
 		CodeNode *node = new CodeNode();
-		node->code = "ret " + ident->code + "\n";
-		$$ = node;
+		node->code = ".> " + ident + "\n";
+		$$ = node;  
+
+		printf(".> %s\n", ident.c_str());
 	}
 
-<<<<<<< HEAD
-=======
-return_call: RETURN operation SMCOL {
+return_call: RETURN term SMCOL {
 		std::string ident = $2;
-		CodeNode *node = new CodeNode();
+		CodeNode *node = new CodeNode;
+		node->code = "ret " + ident + "\n";
+		$$ = node;	
+		printf("ret %s\n", ident.c_str());	
+	}
+	| RETURN operation SMCOL {
+		std::string ident = $2;
+		CodeNode *node = new CodeNode;
 		node->code = "ret " + ident + "\n";
 		$$ = node;
 		printf("ret %s\n", ident.c_str());
 	}	
->>>>>>> abe3a278585a4ecb2e737741070d2f5b51aad52c
 while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL {}
 
 if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call else_call {}
@@ -285,108 +281,79 @@ comp: LESSER {}
 	| EQUALTO {}
 
 operation: L_PAR operation R_PAR {}
-	| operation PLUS multiplicative_operation {
+	| multiplicative_operation PLUS multiplicative_operation {
 		CodeNode *node = new CodeNode();
 		std::string temp = make_temp();
-		CodeNode *lhs = $1;
-		CodeNode *rhs = $3;
+		std::string lhs = $1;
+		std::string rhs = $3;
 		node->code = ". " + temp + "\n";
 		printf(". %s\n", temp.c_str());
-<<<<<<< HEAD
-		node->code = "* " + temp + ", " + lhs->code + ", " + rhs->code + "\n";
-		printf("+ %s, %s, %s\n", temp.c_str(), lhs->code.c_str(), rhs->code.c_str());
-		$$ = node;
-=======
 		node->code = "+ " + temp + ", " + lhs + ", " + rhs + "\n";
 
 		printf("+ %s, %s, %s\n", temp.c_str(), lhs.c_str(), rhs.c_str());
->>>>>>> abe3a278585a4ecb2e737741070d2f5b51aad52c
 	}
-	| operation MINUS multiplicative_operation {
+	| multiplicative_operation MINUS multiplicative_operation {
 		CodeNode *node = new CodeNode();
                 std::string temp = make_temp();
-                CodeNode *lhs = $1;
-                CodeNode *rhs = $3;
+                std::string lhs = $1;
+                std::string rhs = $3;
                 node->code = ". " + temp + "\n";
                 printf(". %s\n", temp.c_str());
-<<<<<<< HEAD
-                node->code = "* " + temp + ", " + lhs->code + ", " + rhs->code + "\n";
-                printf("- %s, %s, %s\n", temp.c_str(), lhs->code.c_str(), rhs->code.c_str());
-		$$ = node;
-=======
                 node->code = "- " + temp + ", " + lhs + ", " + rhs + "\n";
                 printf("- %s, %s, %s\n", temp.c_str(), lhs.c_str(), rhs.c_str());
->>>>>>> abe3a278585a4ecb2e737741070d2f5b51aad52c
 	}
 	| multiplicative_operation {
 		$$ = $1;
 	}
 
-multiplicative_operation: multiplicative_operation MULT term {
+multiplicative_operation: term {
+		CodeNode *node = new CodeNode();
+		$$ = $1;	
+	}
+	| term MULT term {
 		CodeNode *node = new CodeNode();
 		std::string temp = make_temp();
-                CodeNode *lhs = $1;
-                CodeNode *rhs = $3;
+                std::string lhs = $1;
+                std::string rhs = $3;
                 node->code = ". " + temp + "\n";
                 printf(". %s\n", temp.c_str());
-                node->code = "* " + temp + ", " + lhs->code + ", " + rhs->code + "\n";
-                printf("* %s, %s, %s\n", temp.c_str(), lhs->code.c_str(), rhs->code.c_str());
-		$$ = node;
+                node->code = "* " + temp + ", " + lhs + ", " + rhs + "\n";
+                printf("* %s, %s, %s\n", temp.c_str(), lhs.c_str(), rhs.c_str());
 	}
-	| multiplicative_operation DIV term {
+	| term DIV term {
 		CodeNode *node = new CodeNode();
                 std::string temp = make_temp();
-                CodeNode *lhs = $1;
-                CodeNode *rhs = $3;
+                std::string lhs = $1;
+                std::string rhs = $3;
                 node->code = ". " + temp + "\n";
                 printf(". %s\n", temp.c_str());
-<<<<<<< HEAD
-                node->code = "* " + temp + ", " + lhs->code + ", " + rhs->code + "\n";
-                printf("/ %s, %s, %s\n", temp.c_str(), lhs->code.c_str(), rhs->code.c_str());
-		$$ = node;
-=======
                 node->code = "/ " + temp + ", " + lhs + ", " + rhs + "\n";
                 printf("/ %s, %s, %s\n", temp.c_str(), lhs.c_str(), rhs.c_str());
->>>>>>> abe3a278585a4ecb2e737741070d2f5b51aad52c
 	}
-	| multiplicative_operation MOD term {
+	| term MOD term {
 		CodeNode *node = new CodeNode();
                 std::string temp = make_temp();
-                CodeNode *lhs = $1;
-                CodeNode *rhs = $3;
+                std::string lhs = $1;
+                std::string rhs = $3;
                 node->code = ". " + temp + "\n";
                 printf(". %s\n", temp.c_str());
-<<<<<<< HEAD
-                node->code = "* " + temp + ", " + lhs->code + ", " + rhs->code + "\n";
-                printf("% %s, %s, %s\n", temp.c_str(), lhs->code.c_str(), rhs->code.c_str());
-		$$ = node;
-	}
-	| term {
-		CodeNode *node = new CodeNode();
-		$$ = $1;
-=======
                 node->code = "%% " + temp + ", " + lhs + ", " + rhs + "\n";
                 printf("%% %s, %s, %s\n", temp.c_str(), lhs.c_str(), rhs.c_str());
->>>>>>> abe3a278585a4ecb2e737741070d2f5b51aad52c
 	}
+
 term: %empty /*epsilon*/ {}
 	| IDENTIFIER { 
-		CodeNode *node = new CodeNode();
-		node->code = $1;
-		$$ = node; 
+		//printf("term -> IDENTIFIER\n");
+		$$ = $1; 
 	}
 	| IDENTIFIER L_SQUARE term R_SQUARE {
-		CodeNode *node = new CodeNode();
-		node->code = $1;
-		$$ = node;
+		$$ = $1;
 	}
 	| NUMBER {
-		CodeNode *node = new CodeNode();
-		node->code = $1;
-		$$ = node;
+		//printf("term -> NUMBER\n");
+		$$ = $1;
 	}
-	| function_call{
-	}
+	| function_call{}
 
 %%
 

@@ -88,6 +88,7 @@ std::string make_temp() {
 %type <op_val> term
 %type <op_val> operation
 %type <op_val> multiplicative_operation
+%type <node> return_call
 %type <node> assignment
 %type <node> prog_start
 %type <node> functions 
@@ -218,7 +219,15 @@ assignment: IDENTIFIER EQUAL operation SMCOL{
 		
 		printf("[]= %s, %s, %s\n", ident.c_str(), arrNum.c_str(), assigned.c_str());
 	}
-
+/*	| IDENTIFIER EQUAL function_call SMCOL {
+		std::string ident = $1;
+		std::string funct = $3;
+		CodeNode *node = new CodeNode();
+		node->code = "= " + ident + ", " + funct + "\n";
+		$$ = node;
+		printf("= %s, %s\n", ident.c_str(), funct.c_str());
+	}
+*/
 read_call: READ L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {}
 	| READ L_PAR IDENTIFIER R_PAR SMCOL {}
 
@@ -241,8 +250,20 @@ write_call: WRITE L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {
 		printf(".> %s\n", ident.c_str());
 	}
 
-return_call: RETURN term SMCOL {}
-
+return_call: RETURN term SMCOL {
+		std::string ident = $2;
+		CodeNode *node = new CodeNode;
+		node->code = "ret " + ident + "\n";
+		$$ = node;	
+		printf("ret %s\n", ident.c_str());	
+	}
+	| RETURN operation SMCOL {
+		std::string ident = $2;
+		CodeNode *node = new CodeNode;
+		node->code = "ret " + ident + "\n";
+		$$ = node;
+		printf("ret %s\n", ident.c_str());
+	}	
 while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL {}
 
 if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call else_call {}
@@ -268,6 +289,7 @@ operation: L_PAR operation R_PAR {}
 		node->code = ". " + temp + "\n";
 		printf(". %s\n", temp.c_str());
 		node->code = "+ " + temp + ", " + lhs + ", " + rhs + "\n";
+
 		printf("+ %s, %s, %s\n", temp.c_str(), lhs.c_str(), rhs.c_str());
 	}
 	| multiplicative_operation MINUS multiplicative_operation {

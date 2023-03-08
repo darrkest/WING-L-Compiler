@@ -85,46 +85,68 @@ std::string make_temp() {
 %token READ WRITE
 %token <op_val> NUMBER
 %token <op_val> IDENTIFIER
-%type <node> term
-%type <node> operation
-%type <node> multiplicative_operation
-%type <node> return_call
-%type <node> assignment
 %type <node> prog_start
 %type <node> functions 
 %type <node> function
 %type <node> arguments
 %type <node> argument
-%type <node> declared_term
-%type <node> declaration
 %type <node> statements
 %type <node> statement
-%type <node> write_call
+
 
 %%
 
 prog_start: %empty /* epsilon */ {}
-	| functions {}
+	| functions {
+		CodeNode *node = new CodeNode();
+		node = $1;
+		$$ = node;
+		printf("%s\n", node->code.c_str());
+	}
 
-functions: %empty /* epsilon */ {}
-	| function functions {}
+functions: %empty /* epsilon */ {
+		CodeNode *node = new CodeNode();
+		node->code = "";
+		$$ = node;
+	}
+	| function functions {
+		CodeNode *node = new CodeNode();
+		CodeNode *func = $1;
+		CodeNode *funcs = $2;
+		node->code = func->code + funcs->code;
+		$$ = node;
+	}
 
 function: FUNCTION IDENTIFIER {
+		// Add to symbol table
 		std::string func_name $2;
 		Type t = Function;
                 temp_add_to_symbol_table(func_name,t);
 		
+		CodeNode *node = new CodeNode();
+		node->code = "func " + func_name + "\n";
 	}	
 	L_PAR arguments R_PAR L_CURL statements R_CURL {
-		
+		CodeNode *node = new CodeNode();
+		// Need to do codenode for arguments and statements here
+		node->code += "endfunc\n";
+		$$ = node;
 	}
 	| FUNCTION IDENTIFIER {
+		// Add to symbol table
 		std::string func_name $2;
                 Type t = Function;
                 temp_add_to_symbol_table(func_name,t);
+		
+		CodeNode *node = new CodeNode();
+		node->code = "func " + func_name + "\n";
 	}
 	L_CURL statements R_CURL {
-		
+		CodeNode *node = new CodeNode();
+		//CodeNode *statements = $2;
+		//node->code = statements->code;
+		node->code += "endfunc\n";
+		$$ = node;
 	}
 
 arguments: argument {}			
@@ -143,7 +165,6 @@ declared_term: INTEGER IDENTIFIER {
 	}
 	| INTEGER IDENTIFIER L_SQUARE term R_SQUARE {
 		std::string var_name = $2;
-		std::string arrNum = $4;
 		Type t = Array;
 		temp_add_to_symbol_table(var_name, t);
 	}

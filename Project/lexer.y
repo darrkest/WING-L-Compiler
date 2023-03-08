@@ -142,6 +142,7 @@ arguments: argument {}
 argument: %empty /* epsilon */ {}
 	| declared_term {}
 	| term {}
+	| operation {}
 
 declared_term: INTEGER IDENTIFIER {	
 		CodeNode *node = new CodeNode();

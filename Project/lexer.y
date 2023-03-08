@@ -315,8 +315,8 @@ multiplicative_operation: term {
                 std::string rhs = $3;
                 node->code = ". " + temp + "\n";
                 printf(". %s\n", temp.c_str());
-                node->code = "% " + temp + ", " + lhs + ", " + rhs + "\n";
-                printf("% %s, %s, %s\n", temp.c_str(), lhs.c_str(), rhs.c_str());
+                node->code = "%% " + temp + ", " + lhs + ", " + rhs + "\n";
+                printf("%% %s, %s, %s\n", temp.c_str(), lhs.c_str(), rhs.c_str());
 	}
 
 term: %empty /*epsilon*/ {}

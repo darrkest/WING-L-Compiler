@@ -83,8 +83,10 @@ std::string make_temp() {
 %token LESSER GREATER EQUALTO NOT NOTEQUAL AND OR
 %token IFBR ELIFBR ELSEBR WLOOP 
 %token READ WRITE
+
 %token <op_val> NUMBER
 %token <op_val> IDENTIFIER
+
 %type <node> prog_start
 %type <node> functions 
 %type <node> function
@@ -92,15 +94,18 @@ std::string make_temp() {
 %type <node> argument
 %type <node> statements
 %type <node> statement
+%type <node> declaration
+%type <node> declared_term
 
+%type <node> operation
+%type <node> multiplicative_operation
+%type <node> term
 
 %%
 
 prog_start: %empty /* epsilon */ {}
 	| functions {
-		CodeNode *node = new CodeNode();
-		node = $1;
-		$$ = node;
+		CodeNode *node = $1;
 		printf("%s\n", node->code.c_str());
 	}
 
@@ -113,66 +118,106 @@ functions: %empty /* epsilon */ {
 		CodeNode *node = new CodeNode();
 		CodeNode *func = $1;
 		CodeNode *funcs = $2;
-		node->code = func->code + funcs->code;
+		node->code += func->code + funcs->code;
 		$$ = node;
 	}
 
-function: FUNCTION IDENTIFIER {
+function: FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {
 		// Add to symbol table
-		std::string func_name $2;
-		Type t = Function;
-                temp_add_to_symbol_table(func_name,t);
-		
-		CodeNode *node = new CodeNode();
-		node->code = "func " + func_name + "\n";
-	}	
-	L_PAR arguments R_PAR L_CURL statements R_CURL {
-		CodeNode *node = new CodeNode();
-		// Need to do codenode for arguments and statements here
-		node->code += "endfunc\n";
-		$$ = node;
-	}
-	| FUNCTION IDENTIFIER {
-		// Add to symbol table
-		std::string func_name $2;
+                std::string func_name = $2;
                 Type t = Function;
                 temp_add_to_symbol_table(func_name,t);
 		
-		CodeNode *node = new CodeNode();
-		node->code = "func " + func_name + "\n";
+		// Add the "func func_name"
+                CodeNode *node = new CodeNode();
+                node->code = "func " + func_name + "\n";
+		// Add the arguments code
+		CodeNode *args = $4;
+		node->code += args->code;
+		// Add the statements code
+		CodeNode *states = $7;
+		node->code += states->code;
+
+		node->code += "endfunc\n";
+		//node->code = "";
+		$$ = node;
 	}
-	L_CURL statements R_CURL {
-		CodeNode *node = new CodeNode();
-		//CodeNode *statements = $2;
-		//node->code = statements->code;
+	| FUNCTION IDENTIFIER L_CURL statements R_CURL {
+		// Add to symbol table
+                std::string func_name = $2;
+                Type t = Function;
+                temp_add_to_symbol_table(func_name,t);
+
+                CodeNode *node = new CodeNode();
+                node->code = "func " + func_name + "\n";
+		
+		CodeNode *states = $4;
+		node->code += states->code;
 		node->code += "endfunc\n";
 		$$ = node;
 	}
 
-arguments: argument {}			
-	| argument COMMA arguments {}
-	| %empty {}
+arguments: argument {
+		CodeNode *node = $1;
+		$$ = node;
+	}			
+	| argument COMMA arguments {
+		CodeNode *node = new CodeNode();
+		CodeNode *arg = $1;
+		CodeNode *args = $3;
+		node->code = arg->code + args->code;
+		$$ = node;
+	}
+	| %empty {
+		CodeNode *node = new CodeNode();
+		node->code = "";
+		$$ = node;
+	}
 
-argument: %empty /* epsilon */ {}
+argument: %empty /* epsilon */ {
+		CodeNode *node = new CodeNode();
+		node->code = "";
+		$$ = node;
+	}
 	| declared_term {}
 	| term {}
 	| operation {}
 
 declared_term: INTEGER IDENTIFIER {	
+		// Add to symbol table
 		std::string var_name = $2;
 		Type t = Integer;
 		temp_add_to_symbol_table(var_name, t);
+
+		CodeNode *node = new CodeNode();
+		node->code = ". " + var_name + "\n";
+		$$ = node;
 	}
 	| INTEGER IDENTIFIER L_SQUARE term R_SQUARE {
+		// Add to symbol table
 		std::string var_name = $2;
 		Type t = Array;
 		temp_add_to_symbol_table(var_name, t);
 	}
 
-statements: %empty /* epsilon */ {}
-	| statement statements {}
+statements: %empty /* epsilon */ {
+		CodeNode *node = new CodeNode();
+		node->code = "";
+		$$ = node;
+	}
+	| statement statements {
+		// FIXME: Segfaulting
+		CodeNode *node = new CodeNode();
+		CodeNode *state = $1;
+		CodeNode *states = $2;
+		//node->code = state->code + states->code;
+		$$ = node;
+	}
 
-statement: declaration {}
+statement: declaration {
+		CodeNode *node = $1;
+		$$ = node;
+	}
         | function_call {}
 	| assignment {}
 	| read_call   {}
@@ -183,7 +228,10 @@ statement: declaration {}
 	| elif_call {}
 	| else_call {}
 	
-declaration: declared_term SMCOL{}
+declaration: declared_term SMCOL{
+		CodeNode *node = $1;
+		$$ = node;
+	}
 
 function_call: IDENTIFIER L_PAR arguments R_PAR {}
 
@@ -225,9 +273,21 @@ multiplicative_operation: term {}
 	| term MOD term {}
 
 term: %empty /*epsilon*/ {}
-	| IDENTIFIER {}
-	| IDENTIFIER L_SQUARE term R_SQUARE {}
-	| NUMBER {}
+	| IDENTIFIER {
+		CodeNode *node = new CodeNode();
+		node->name = $1;
+		$$ = node;
+	}
+	| IDENTIFIER L_SQUARE term R_SQUARE {
+		CodeNode *node = new CodeNode();
+		node->name = $1;
+		$$ = node;
+	}
+	| NUMBER {
+		CodeNode *node = new CodeNode();
+		node->name = $1;
+		$$ = node;
+	}
 	| function_call{}
 
 %%

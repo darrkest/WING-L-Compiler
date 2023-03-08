@@ -129,7 +129,7 @@ function: FUNCTION IDENTIFIER
 
 	}
 	  L_CURL statements R_CURL {
-		printf("endfunc\n");
+		printf("endfunc\n \n");
 	}
 
 arguments: argument {}			
@@ -142,7 +142,7 @@ arguments: argument {}
 argument: %empty /* epsilon */ {}
 	| declared_term {}
 	| term {}
-
+	| operation {}
 declared_term: INTEGER IDENTIFIER {	
 		CodeNode *node = new CodeNode();
 		std::string var_name = $2;
@@ -164,7 +164,7 @@ declared_term: INTEGER IDENTIFIER {
 		//printf("array %s\n", var_name.c_str());
 		$$ = node;
 
-		printf(".[] %s, %s", var_name.c_str(), arrNum.c_str());
+		printf(".[] %s, %s\n", var_name.c_str(), arrNum.c_str());
 	}
 
 statements: %empty /* epsilon */ {
@@ -198,8 +198,13 @@ declaration: declared_term SMCOL{
 	$$ = node;
 }
 
-function_call: IDENTIFIER L_PAR arguments R_PAR {}
-
+function_call: IDENTIFIER L_PAR arguments R_PAR {
+/*		std::string arg = $3;
+		CodeNode *node = new CodeNode();
+		node ->code = "param " arg + "\n";
+	//	$$ = node;
+		printf("param %s\n", arg.c_str()); */
+	}
 assignment: IDENTIFIER EQUAL operation SMCOL{
 		std::string ident = $1;
 		std::string assigned = $3;
@@ -219,15 +224,7 @@ assignment: IDENTIFIER EQUAL operation SMCOL{
 		
 		printf("[]= %s, %s, %s\n", ident.c_str(), arrNum.c_str(), assigned.c_str());
 	}
-/*	| IDENTIFIER EQUAL function_call SMCOL {
-		std::string ident = $1;
-		std::string funct = $3;
-		CodeNode *node = new CodeNode();
-		node->code = "= " + ident + ", " + funct + "\n";
-		$$ = node;
-		printf("= %s, %s\n", ident.c_str(), funct.c_str());
-	}
-*/
+
 read_call: READ L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {}
 	| READ L_PAR IDENTIFIER R_PAR SMCOL {}
 
@@ -250,16 +247,9 @@ write_call: WRITE L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {
 		printf(".> %s\n", ident.c_str());
 	}
 
-return_call: RETURN term SMCOL {
+return_call: RETURN operation SMCOL {
 		std::string ident = $2;
-		CodeNode *node = new CodeNode;
-		node->code = "ret " + ident + "\n";
-		$$ = node;	
-		printf("ret %s\n", ident.c_str());	
-	}
-	| RETURN operation SMCOL {
-		std::string ident = $2;
-		CodeNode *node = new CodeNode;
+		CodeNode *node = new CodeNode();
 		node->code = "ret " + ident + "\n";
 		$$ = node;
 		printf("ret %s\n", ident.c_str());
@@ -353,7 +343,8 @@ term: %empty /*epsilon*/ {}
 		//printf("term -> NUMBER\n");
 		$$ = $1;
 	}
-	| function_call{}
+	| function_call{
+	}
 
 %%
 

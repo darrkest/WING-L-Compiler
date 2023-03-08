@@ -96,7 +96,8 @@ std::string make_temp() {
 %type <node> statement
 %type <node> declaration
 %type <node> declared_term
-
+%type <node> write_call
+%type <node> assignment
 %type <node> operation
 %type <node> multiplicative_operation
 %type <node> term
@@ -179,8 +180,16 @@ argument: %empty /* epsilon */ {
 		node->code = "";
 		$$ = node;
 	}
-	| declared_term {}
-	| term {}
+	| declared_term {
+		CodeNode *node = new CodeNode();
+		node->code = "";
+		$$ = node;
+	}
+	| term {
+		CodeNode *node = new CodeNode();
+		node->code = "";
+		$$ = node;
+	}
 	| operation {}
 
 declared_term: INTEGER IDENTIFIER {	
@@ -206,11 +215,10 @@ statements: %empty /* epsilon */ {
 		$$ = node;
 	}
 	| statement statements {
-		// FIXME: Segfaulting
 		CodeNode *node = new CodeNode();
 		CodeNode *state = $1;
 		CodeNode *states = $2;
-		//node->code = state->code + states->code;
+		node->code = state->code + states->code;
 		$$ = node;
 	}
 
@@ -219,9 +227,15 @@ statement: declaration {
 		$$ = node;
 	}
         | function_call {}
-	| assignment {}
+	| assignment {
+		CodeNode *node = $1;
+		$$ = node;
+	}
 	| read_call   {}
-	| write_call {}
+	| write_call {
+		CodeNode *node = $1;
+		$$ = node;
+	}
 	| return_call {}
 	| while_call {}
 	| if_call {}
@@ -235,14 +249,31 @@ declaration: declared_term SMCOL{
 
 function_call: IDENTIFIER L_PAR arguments R_PAR {}
 
-assignment: IDENTIFIER EQUAL operation SMCOL{}
+assignment: IDENTIFIER EQUAL operation SMCOL{
+		CodeNode *node = new CodeNode();
+		std::string ident = $1;
+		CodeNode *rhs = $3;
+		node->code = "= " + ident + ", " + rhs->code + "\n";
+		$$ = node;
+	}
 	| IDENTIFIER L_SQUARE term R_SQUARE EQUAL operation SMCOL {}
 
 read_call: READ L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {}
 	| READ L_PAR IDENTIFIER R_PAR SMCOL {}
 
-write_call: WRITE L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {}
-	| WRITE L_PAR IDENTIFIER R_PAR SMCOL {}
+write_call: WRITE L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {
+		CodeNode *node = new CodeNode();
+		std::string ident = $3;
+		CodeNode *arr = $5;
+		node->code = ".[]> " + ident + arr->code + "\n";
+		$$ = node;
+	}
+	| WRITE L_PAR IDENTIFIER R_PAR SMCOL {
+		CodeNode *node = new CodeNode();
+		std::string ident = $3;
+		node->code = ".> " + ident + "\n";
+		$$ = node; 
+	}
 
 return_call: RETURN term SMCOL {}
 	| RETURN operation SMCOL {}	
@@ -265,9 +296,15 @@ comp: LESSER {}
 operation: L_PAR operation R_PAR {}
 	| multiplicative_operation PLUS multiplicative_operation {}
 	| multiplicative_operation MINUS multiplicative_operation {}
-	| multiplicative_operation {}
+	| multiplicative_operation {
+		CodeNode *node = $1;
+		$$ = node;
+	}
 
-multiplicative_operation: term {}
+multiplicative_operation: term {
+		CodeNode *node = $1;
+		$$ = node;
+	}
 	| term MULT term {}
 	| term DIV term {}
 	| term MOD term {}
@@ -275,17 +312,17 @@ multiplicative_operation: term {}
 term: %empty /*epsilon*/ {}
 	| IDENTIFIER {
 		CodeNode *node = new CodeNode();
-		node->name = $1;
+		node->code = $1;
 		$$ = node;
 	}
 	| IDENTIFIER L_SQUARE term R_SQUARE {
 		CodeNode *node = new CodeNode();
-		node->name = $1;
+		node->code = $1;
 		$$ = node;
 	}
 	| NUMBER {
 		CodeNode *node = new CodeNode();
-		node->name = $1;
+		node->code = $1;
 		$$ = node;
 	}
 	| function_call{}

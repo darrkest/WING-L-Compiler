@@ -85,9 +85,15 @@ std::string make_temp() {
 %token READ WRITE
 %token <op_val> NUMBER
 %token <op_val> IDENTIFIER
+<<<<<<< HEAD
 %type <node> term
 %type <node> operation
 %type <node> multiplicative_operation
+=======
+%type <op_val> term
+%type <op_val> operation
+%type <op_val> multiplicative_operation
+>>>>>>> abe3a278585a4ecb2e737741070d2f5b51aad52c
 %type <node> return_call
 %type <node> assignment
 %type <node> prog_start
@@ -129,7 +135,7 @@ function: FUNCTION IDENTIFIER
 
 	}
 	  L_CURL statements R_CURL {
-		printf("endfunc\n");
+		printf("endfunc\n \n");
 	}
 
 arguments: argument {}			
@@ -142,7 +148,7 @@ arguments: argument {}
 argument: %empty /* epsilon */ {}
 	| declared_term {}
 	| term {}
-
+	| operation {}
 declared_term: INTEGER IDENTIFIER {	
 		CodeNode *node = new CodeNode();
 		std::string var_name = $2;
@@ -164,7 +170,11 @@ declared_term: INTEGER IDENTIFIER {
 		//printf("array %s\n", var_name.c_str());
 		$$ = node;
 
+<<<<<<< HEAD
 		printf(".[] %s, %s", var_name.c_str(), arrNum->code.c_str());
+=======
+		printf(".[] %s, %s\n", var_name.c_str(), arrNum.c_str());
+>>>>>>> abe3a278585a4ecb2e737741070d2f5b51aad52c
 	}
 
 statements: %empty /* epsilon */ {
@@ -206,8 +216,13 @@ declaration: declared_term SMCOL{
 	$$ = node;
 }
 
-function_call: IDENTIFIER L_PAR arguments R_PAR {}
-
+function_call: IDENTIFIER L_PAR arguments R_PAR {
+/*		std::string arg = $3;
+		CodeNode *node = new CodeNode();
+		node ->code = "param " arg + "\n";
+	//	$$ = node;
+		printf("param %s\n", arg.c_str()); */
+	}
 assignment: IDENTIFIER EQUAL operation SMCOL{
 		std::string ident = $1;
 		CodeNode *assigned = $3;
@@ -243,6 +258,16 @@ return_call: RETURN operation SMCOL {
 		$$ = node;
 	}
 
+<<<<<<< HEAD
+=======
+return_call: RETURN operation SMCOL {
+		std::string ident = $2;
+		CodeNode *node = new CodeNode();
+		node->code = "ret " + ident + "\n";
+		$$ = node;
+		printf("ret %s\n", ident.c_str());
+	}	
+>>>>>>> abe3a278585a4ecb2e737741070d2f5b51aad52c
 while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL {}
 
 if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call else_call {}
@@ -267,9 +292,15 @@ operation: L_PAR operation R_PAR {}
 		CodeNode *rhs = $3;
 		node->code = ". " + temp + "\n";
 		printf(". %s\n", temp.c_str());
+<<<<<<< HEAD
 		node->code = "* " + temp + ", " + lhs->code + ", " + rhs->code + "\n";
 		printf("+ %s, %s, %s\n", temp.c_str(), lhs->code.c_str(), rhs->code.c_str());
 		$$ = node;
+=======
+		node->code = "+ " + temp + ", " + lhs + ", " + rhs + "\n";
+
+		printf("+ %s, %s, %s\n", temp.c_str(), lhs.c_str(), rhs.c_str());
+>>>>>>> abe3a278585a4ecb2e737741070d2f5b51aad52c
 	}
 	| operation MINUS multiplicative_operation {
 		CodeNode *node = new CodeNode();
@@ -278,9 +309,14 @@ operation: L_PAR operation R_PAR {}
                 CodeNode *rhs = $3;
                 node->code = ". " + temp + "\n";
                 printf(". %s\n", temp.c_str());
+<<<<<<< HEAD
                 node->code = "* " + temp + ", " + lhs->code + ", " + rhs->code + "\n";
                 printf("- %s, %s, %s\n", temp.c_str(), lhs->code.c_str(), rhs->code.c_str());
 		$$ = node;
+=======
+                node->code = "- " + temp + ", " + lhs + ", " + rhs + "\n";
+                printf("- %s, %s, %s\n", temp.c_str(), lhs.c_str(), rhs.c_str());
+>>>>>>> abe3a278585a4ecb2e737741070d2f5b51aad52c
 	}
 	| multiplicative_operation {
 		$$ = $1;
@@ -304,9 +340,14 @@ multiplicative_operation: multiplicative_operation MULT term {
                 CodeNode *rhs = $3;
                 node->code = ". " + temp + "\n";
                 printf(". %s\n", temp.c_str());
+<<<<<<< HEAD
                 node->code = "* " + temp + ", " + lhs->code + ", " + rhs->code + "\n";
                 printf("/ %s, %s, %s\n", temp.c_str(), lhs->code.c_str(), rhs->code.c_str());
 		$$ = node;
+=======
+                node->code = "/ " + temp + ", " + lhs + ", " + rhs + "\n";
+                printf("/ %s, %s, %s\n", temp.c_str(), lhs.c_str(), rhs.c_str());
+>>>>>>> abe3a278585a4ecb2e737741070d2f5b51aad52c
 	}
 	| multiplicative_operation MOD term {
 		CodeNode *node = new CodeNode();
@@ -315,6 +356,7 @@ multiplicative_operation: multiplicative_operation MULT term {
                 CodeNode *rhs = $3;
                 node->code = ". " + temp + "\n";
                 printf(". %s\n", temp.c_str());
+<<<<<<< HEAD
                 node->code = "* " + temp + ", " + lhs->code + ", " + rhs->code + "\n";
                 printf("% %s, %s, %s\n", temp.c_str(), lhs->code.c_str(), rhs->code.c_str());
 		$$ = node;
@@ -322,6 +364,10 @@ multiplicative_operation: multiplicative_operation MULT term {
 	| term {
 		CodeNode *node = new CodeNode();
 		$$ = $1;
+=======
+                node->code = "%% " + temp + ", " + lhs + ", " + rhs + "\n";
+                printf("%% %s, %s, %s\n", temp.c_str(), lhs.c_str(), rhs.c_str());
+>>>>>>> abe3a278585a4ecb2e737741070d2f5b51aad52c
 	}
 term: %empty /*epsilon*/ {}
 	| IDENTIFIER { 
@@ -339,7 +385,8 @@ term: %empty /*epsilon*/ {}
 		node->code = $1;
 		$$ = node;
 	}
-	| function_call{}
+	| function_call{
+	}
 
 %%
 

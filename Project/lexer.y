@@ -237,7 +237,10 @@ statement: declaration {
 		CodeNode *node = $1;
 		$$ = node;
 	}
-	| return_call {}
+	| return_call {
+		CodeNode *node = $1;
+		$$ = node;
+	}
 	| while_call {}
 	| if_call {}
 	| elif_call {}
@@ -278,7 +281,10 @@ write_call: WRITE L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {
 	}
 
 return_call: RETURN operation SMCOL {
-		CodeNode *node = $2;
+		CodeNode *node = new CodeNode();
+		CodeNode *op = $2;
+		node->code = op->code;
+		node->code += "ret " + op->name + "\n"; 
 		$$ = node;
 	}
 	

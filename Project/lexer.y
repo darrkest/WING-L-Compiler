@@ -101,6 +101,7 @@ std::string make_temp() {
 %type <node> operation
 %type <node> multiplicative_operation
 %type <node> term
+%type <node> return_call
 
 %%
 
@@ -253,7 +254,8 @@ assignment: IDENTIFIER EQUAL operation SMCOL{
 		CodeNode *node = new CodeNode();
 		std::string ident = $1;
 		CodeNode *rhs = $3;
-		node->code = "= " + ident + ", " + rhs->code + "\n";
+		node->code += rhs->code;
+		node->code += "= " + ident + ", " + rhs->name + "\n";
 		$$ = node;
 	}
 	| IDENTIFIER L_SQUARE term R_SQUARE EQUAL operation SMCOL {}
@@ -265,7 +267,7 @@ write_call: WRITE L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {
 		CodeNode *node = new CodeNode();
 		std::string ident = $3;
 		CodeNode *arr = $5;
-		node->code = ".[]> " + ident + arr->code + "\n";
+		node->code = ".[]> " + ident + arr->name + "\n";
 		$$ = node;
 	}
 	| WRITE L_PAR IDENTIFIER R_PAR SMCOL {
@@ -275,8 +277,11 @@ write_call: WRITE L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {
 		$$ = node; 
 	}
 
-return_call: RETURN term SMCOL {}
-	| RETURN operation SMCOL {}	
+return_call: RETURN operation SMCOL {
+		CodeNode *node = $2;
+		$$ = node;
+	}
+	
 while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL {}
 
 if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call else_call {}
@@ -293,8 +298,14 @@ comp: LESSER {}
 	| GREATER {}
 	| EQUALTO {}
 
-operation: L_PAR operation R_PAR {}
-	| multiplicative_operation PLUS multiplicative_operation {}
+operation: multiplicative_operation PLUS multiplicative_operation {
+		CodeNode *node = new CodeNode();
+		std::string temp = make_temp();
+		CodeNode *lhs = $1;
+		CodeNode *rhs = $3;
+		node->code += "+ " + temp + ", " + lhs->name + ", " + rhs->name + "\n";
+		$$ = node;
+	}
 	| multiplicative_operation MINUS multiplicative_operation {}
 	| multiplicative_operation {
 		CodeNode *node = $1;
@@ -310,19 +321,23 @@ multiplicative_operation: term {
 	| term MOD term {}
 
 term: %empty /*epsilon*/ {}
+	| L_PAR operation R_PAR {
+		CodeNode *node = $2;
+		$$ = node;
+	}
 	| IDENTIFIER {
 		CodeNode *node = new CodeNode();
-		node->code = $1;
+		node->name = $1;
 		$$ = node;
 	}
 	| IDENTIFIER L_SQUARE term R_SQUARE {
 		CodeNode *node = new CodeNode();
-		node->code = $1;
+		node->name = $1;
 		$$ = node;
 	}
 	| NUMBER {
 		CodeNode *node = new CodeNode();
-		node->code = $1;
+		node->name = $1;
 		$$ = node;
 	}
 	| function_call{}

@@ -301,9 +301,12 @@ comp: LESSER {}
 operation: multiplicative_operation PLUS multiplicative_operation {
 		CodeNode *node = new CodeNode();
 		std::string temp = make_temp();
+		node->code = ". " + temp + "\n";
 		CodeNode *lhs = $1;
 		CodeNode *rhs = $3;
+		
 		node->code += "+ " + temp + ", " + lhs->name + ", " + rhs->name + "\n";
+		node->name = temp;
 		$$ = node;
 	}
 	| multiplicative_operation MINUS multiplicative_operation {}

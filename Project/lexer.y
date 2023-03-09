@@ -309,7 +309,17 @@ operation: multiplicative_operation PLUS multiplicative_operation {
 		node->name = temp;
 		$$ = node;
 	}
-	| multiplicative_operation MINUS multiplicative_operation {}
+	| multiplicative_operation MINUS multiplicative_operation {
+		CodeNode *node = new CodeNode();
+		std::string temp = make_temp();
+		node->code = ". " + temp + "\n";
+		CodeNode *lhs = $1;
+		CodeNode *rhs = $3;
+
+		node->code += "- " + temp + ", " + lhs->name + ", " + rhs->name + "\n";
+		node->name = temp;
+		$$ = node;
+	}
 	| multiplicative_operation {
 		CodeNode *node = $1;
 		$$ = node;
@@ -319,9 +329,42 @@ multiplicative_operation: term {
 		CodeNode *node = $1;
 		$$ = node;
 	}
-	| term MULT term {}
-	| term DIV term {}
-	| term MOD term {}
+	| term MULT term {
+		CodeNode *node = new CodeNode();
+                std::string temp = make_temp();
+                node->code = ". " + temp + "\n";
+                CodeNode *lhs = $1;
+                CodeNode *rhs = $3;
+
+                node->code += "* " + temp + ", " + lhs->name + ", " + rhs->name + "\n";
+		node->name = temp;
+                $$ = node;
+
+	}
+	| term DIV term {
+		CodeNode *node = new CodeNode();
+                std::string temp = make_temp();
+                node->code = ". " + temp + "\n";
+                CodeNode *lhs = $1;
+                CodeNode *rhs = $3;
+
+                node->code += "/ " + temp + ", " + lhs->name + ", " + rhs->name + "\n";
+        	node->name = temp;        
+		$$ = node;
+
+	}
+	| term MOD term {
+		CodeNode *node = new CodeNode();
+                std::string temp = make_temp();
+                node->code = ". " + temp + "\n";
+                CodeNode *lhs = $1;
+                CodeNode *rhs = $3;
+
+                node->code += "% " + temp + ", " + lhs->name + ", " + rhs->name + "\n";
+		node->name = temp;
+                $$ = node;
+
+	}
 
 term: %empty /*epsilon*/ {}
 	| L_PAR operation R_PAR {

@@ -206,8 +206,13 @@ declared_term: INTEGER IDENTIFIER {
 	| INTEGER IDENTIFIER L_SQUARE term R_SQUARE {
 		// Add to symbol table
 		std::string var_name = $2;
+		CodeNode *arrSize = $4;
 		Type t = Array;
 		temp_add_to_symbol_table(var_name, t);
+		
+		CodeNode *node = new CodeNode();
+		node->code = ".[] " + var_name + ", " + arrSize->name + "\n";
+		$$ = node;
 	}
 
 statements: %empty /* epsilon */ {
@@ -261,16 +266,27 @@ assignment: IDENTIFIER EQUAL operation SMCOL{
 		node->code += "= " + ident + ", " + rhs->name + "\n";
 		$$ = node;
 	}
-	| IDENTIFIER L_SQUARE term R_SQUARE EQUAL operation SMCOL {}
+	| IDENTIFIER L_SQUARE term R_SQUARE EQUAL operation SMCOL {
+		CodeNode *node = new CodeNode();
+		std::string ident = $1;
+		CodeNode *index = $3;
+		CodeNode *rhs = $6;
+		node->code += rhs->code;
+		node->code += "[]= " + ident + ", " + index->name + ", " + rhs->name + "\n";
+		$$ = node;
+	}
 
 read_call: READ L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {}
 	| READ L_PAR IDENTIFIER R_PAR SMCOL {}
 
 write_call: WRITE L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {
 		CodeNode *node = new CodeNode();
+		std::string temp = make_temp();	
 		std::string ident = $3;
 		CodeNode *arr = $5;
-		node->code = ".[]> " + ident + arr->name + "\n";
+		node->code = ". " + temp + "\n";
+		node->code += "=[] " + temp + ", " + ident + ", " + arr->name + "\n";
+		node->code += ".> " + temp + "\n";
 		$$ = node;
 	}
 	| WRITE L_PAR IDENTIFIER R_PAR SMCOL {

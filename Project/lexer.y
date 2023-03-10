@@ -385,7 +385,6 @@ multiplicative_operation: term {
                 node->code += "% " + temp + ", " + lhs->name + ", " + rhs->name + "\n";
 		node->name = temp;
                 $$ = node;
-
 	}
 
 term: %empty /*epsilon*/ {}
@@ -400,7 +399,12 @@ term: %empty /*epsilon*/ {}
 	}
 	| IDENTIFIER L_SQUARE term R_SQUARE {
 		CodeNode *node = new CodeNode();
-		node->name = $1;
+		std::string ident = $1;
+		CodeNode *arr = $3;
+		std::string temp = make_temp();
+		node->name = temp;
+		node->code = ". " + temp + "\n";
+		node->code += "=[] " + temp + ", " + ident + ", " + arr->name + "\n";
 		$$ = node;
 	}
 	| NUMBER {

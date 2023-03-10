@@ -96,6 +96,7 @@ std::string make_temp() {
 %type <node> statement
 %type <node> declaration
 %type <node> declared_term
+%type <node> read_call
 %type <node> write_call
 %type <node> assignment
 %type <node> operation
@@ -183,15 +184,14 @@ argument: %empty /* epsilon */ {
 	}
 	| declared_term {
 		CodeNode *node = new CodeNode();
-		node->code = "";
+		node = $1;
 		$$ = node;
 	}
-	| term {
+	| operation {
 		CodeNode *node = new CodeNode();
-		node->code = "";
+		node = $1;
 		$$ = node;
 	}
-	| operation {}
 
 declared_term: INTEGER IDENTIFIER {	
 		// Add to symbol table
@@ -276,8 +276,22 @@ assignment: IDENTIFIER EQUAL operation SMCOL{
 		$$ = node;
 	}
 
-read_call: READ L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {}
-	| READ L_PAR IDENTIFIER R_PAR SMCOL {}
+read_call: READ L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {
+		CodeNode *node = new CodeNode();
+                std::string temp = make_temp();
+                std::string ident = $3;
+                CodeNode *arr = $5;
+                node->code = ". " + temp + "\n";
+                node->code += "=[] " + temp + ", " + ident + ", " + arr->name + "\n";
+                node->code += ".< " + temp + "\n";
+                $$ = node;
+	}
+	| READ L_PAR IDENTIFIER R_PAR SMCOL {
+		CodeNode *node = new CodeNode();
+                std::string ident = $3;
+                node->code = ".> " + ident + "\n";
+                $$ = node;
+	}
 
 write_call: WRITE L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {
 		CodeNode *node = new CodeNode();

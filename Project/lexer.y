@@ -65,6 +65,7 @@ int global_variable_counter = 0;
 std::string make_temp() {
 	std::ostringstream os;
 	os << "_temp" << global_variable_counter++;
+	printf("make_temp call\n");
 	return os.str();
 }
 
@@ -340,6 +341,8 @@ operation: multiplicative_operation PLUS multiplicative_operation {
 		node->code = ". " + temp + "\n";
 		CodeNode *lhs = $1;
 		CodeNode *rhs = $3;
+		node->code += $1->code;
+                node->code += $3->code;
 		
 		node->code += "+ " + temp + ", " + lhs->name + ", " + rhs->name + "\n";
 		node->name = temp;
@@ -351,6 +354,8 @@ operation: multiplicative_operation PLUS multiplicative_operation {
 		node->code = ". " + temp + "\n";
 		CodeNode *lhs = $1;
 		CodeNode *rhs = $3;
+		node->code += $1->code;
+                node->code += $3->code;
 
 		node->code += "- " + temp + ", " + lhs->name + ", " + rhs->name + "\n";
 		node->name = temp;
@@ -371,7 +376,8 @@ multiplicative_operation: term {
                 node->code = ". " + temp + "\n";
                 CodeNode *lhs = $1;
                 CodeNode *rhs = $3;
-
+		node->code += $1->code;
+		node->code += $3->code;
                 node->code += "* " + temp + ", " + lhs->name + ", " + rhs->name + "\n";
 		node->name = temp;
                 $$ = node;
@@ -383,7 +389,8 @@ multiplicative_operation: term {
                 node->code = ". " + temp + "\n";
                 CodeNode *lhs = $1;
                 CodeNode *rhs = $3;
-
+		node->code += $1->code;
+		node->code += $3->code;
                 node->code += "/ " + temp + ", " + lhs->name + ", " + rhs->name + "\n";
         	node->name = temp;        
 		$$ = node;
@@ -395,6 +402,8 @@ multiplicative_operation: term {
                 node->code = ". " + temp + "\n";
                 CodeNode *lhs = $1;
                 CodeNode *rhs = $3;
+		node->code += $1->code;
+                node->code += $3->code;
 
                 node->code += "% " + temp + ", " + lhs->name + ", " + rhs->name + "\n";
 		node->name = temp;

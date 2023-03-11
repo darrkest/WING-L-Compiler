@@ -65,7 +65,7 @@ int global_variable_counter = 0;
 std::string make_temp() {
 	std::ostringstream os;
 	os << "_temp" << global_variable_counter++;
-	printf("make_temp call\n");
+	//printf("make_temp call\n");
 	return os.str();
 }
 

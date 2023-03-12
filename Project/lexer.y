@@ -69,7 +69,7 @@ std::string make_temp() {
 	return os.str();
 }
 
-int arg_counter = 0;
+int arg_counter = -1;
 std::vector<std::string> arg_list;
 
 %}
@@ -108,6 +108,8 @@ std::vector<std::string> arg_list;
 %type <node> term
 %type <node> return_call
 %type <node> function_call
+%type <node> func_arguments
+%type <node> func_argument
 %%
 
 prog_start: %empty /* epsilon */ {}
@@ -140,16 +142,13 @@ function: FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {
                 node->code = "func " + func_name + "\n";
 		// Add the arguments code
 		CodeNode *args = $4;
-	
-		//printf("arg name: %s\n", args->name.c_str());
-	
 		node->code += args->code;
 		// Add the statements code
 		CodeNode *states = $7;
 		node->code += states->code;
 
 		node->code += "endfunc\n";
-		//node->code = "";
+		arg_counter = -1;
 		$$ = node;
 	}
 	| FUNCTION IDENTIFIER L_CURL statements R_CURL {
@@ -189,16 +188,35 @@ argument: %empty /* epsilon */ {
 		node->code = "";
 		$$ = node;
 	}
-	| declared_term {
-		CodeNode *node = new CodeNode();
-		node = $1;
-		$$ = node;
-	}
-	| operation {
-		CodeNode *node = new CodeNode();
-		node = $1;
-		$$ = node;
-	}
+	| INTEGER IDENTIFIER {
+                ++arg_counter;
+		char arg[100];
+		sprintf(arg, "%d", arg_counter);
+
+                // Add to symbol table
+                std::string var_name = $2;
+                Type t = Integer;
+                temp_add_to_symbol_table(var_name, t);
+
+                CodeNode *node = new CodeNode();
+                node->name = var_name;
+
+                node->code = ". " + var_name + "\n";
+                node->code += "= " + var_name + ", " + "$" + arg + "\n";
+                $$ = node;
+        }
+        | INTEGER IDENTIFIER L_SQUARE term R_SQUARE {
+                // Add to symbol table
+                std::string var_name = $2;
+                CodeNode *arrSize = $4;
+                Type t = Array;
+                temp_add_to_symbol_table(var_name, t);
+
+                CodeNode *node = new CodeNode();
+                node->name = var_name;
+                node->code = ".[] " + var_name + ", " + arrSize->name + "\n";
+                $$ = node;
+        }
 
 declared_term: INTEGER IDENTIFIER {	
 		// Add to symbol table
@@ -208,6 +226,7 @@ declared_term: INTEGER IDENTIFIER {
 
 		CodeNode *node = new CodeNode();
 		node->name = var_name;
+
 		node->code = ". " + var_name + "\n";
 		$$ = node;
 	}
@@ -271,18 +290,64 @@ declaration: declared_term SMCOL{
 		$$ = node;
 	}
 
-function_call: IDENTIFIER L_PAR arguments R_PAR {
+function_call: IDENTIFIER L_PAR func_arguments R_PAR {
 		CodeNode *node = new CodeNode();
 		std::string func_name = $1;
 		CodeNode *args = $3;
 		
 		std::string temp = make_temp();
+		node->code = args->code;
 		node->code += ". " + temp + "\n";
 		node->name = temp;
 		node->code += "call " + func_name + ", " + temp + "\n";
 
 		$$ = node;
 	}
+
+func_arguments: func_argument {
+                CodeNode *node = $1;
+                $$ = node;
+        }
+        | func_argument COMMA func_arguments {
+                CodeNode *node = new CodeNode();
+                CodeNode *arg = $1;
+                CodeNode *args = $3;
+                node->code = arg->code + args->code;
+                $$ = node;
+        }
+        | %empty {
+                CodeNode *node = new CodeNode();
+                node->code = "";
+                $$ = node;
+        }
+
+
+func_argument: %empty /* epsilon */ {
+                CodeNode *node = new CodeNode();
+                node->code = "";
+                $$ = node;
+        }
+        | IDENTIFIER {
+                CodeNode *node = new CodeNode();
+                std::string var_name = $1;
+		node->name = var_name;
+                node->code = "param " + node->name + "\n";
+                $$ = node;
+        }
+        | IDENTIFIER L_SQUARE term R_SQUARE {
+                CodeNode *node = new CodeNode();
+		std::string var_name = $1;
+		CodeNode *arrSize = $3;
+                node->name = var_name;
+                node->code = ".[] " + var_name + ", " + arrSize->name + "\n";
+                $$ = node;
+        }
+        | operation {
+                // function call operation stuff goes here
+                CodeNode *node = $1;
+		node->code += "param " + node->name + "\n";
+                $$ = node;
+        }
 
 assignment: IDENTIFIER EQUAL operation SMCOL{
 		CodeNode *node = new CodeNode();

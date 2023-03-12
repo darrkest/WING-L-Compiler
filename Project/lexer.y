@@ -69,6 +69,9 @@ std::string make_temp() {
 	return os.str();
 }
 
+int arg_counter = 0;
+std::vector<std::string> arg_list;
+
 %}
 
 %union {
@@ -104,7 +107,7 @@ std::string make_temp() {
 %type <node> multiplicative_operation
 %type <node> term
 %type <node> return_call
-
+%type <node> function_call
 %%
 
 prog_start: %empty /* epsilon */ {}
@@ -137,6 +140,9 @@ function: FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {
                 node->code = "func " + func_name + "\n";
 		// Add the arguments code
 		CodeNode *args = $4;
+	
+		//printf("arg name: %s\n", args->name.c_str());
+	
 		node->code += args->code;
 		// Add the statements code
 		CodeNode *states = $7;
@@ -201,6 +207,7 @@ declared_term: INTEGER IDENTIFIER {
 		temp_add_to_symbol_table(var_name, t);
 
 		CodeNode *node = new CodeNode();
+		node->name = var_name;
 		node->code = ". " + var_name + "\n";
 		$$ = node;
 	}
@@ -212,6 +219,7 @@ declared_term: INTEGER IDENTIFIER {
 		temp_add_to_symbol_table(var_name, t);
 		
 		CodeNode *node = new CodeNode();
+		node->name = var_name;
 		node->code = ".[] " + var_name + ", " + arrSize->name + "\n";
 		$$ = node;
 	}
@@ -233,12 +241,18 @@ statement: declaration {
 		CodeNode *node = $1;
 		$$ = node;
 	}
-        | function_call {}
+        | function_call {
+		CodeNode *node = $1;
+		$$ = node;
+	}
 	| assignment {
 		CodeNode *node = $1;
 		$$ = node;
 	}
-	| read_call   {}
+	| read_call   {
+		CodeNode *node = $1;
+		$$ = node;
+	}
 	| write_call {
 		CodeNode *node = $1;
 		$$ = node;
@@ -257,7 +271,18 @@ declaration: declared_term SMCOL{
 		$$ = node;
 	}
 
-function_call: IDENTIFIER L_PAR arguments R_PAR {}
+function_call: IDENTIFIER L_PAR arguments R_PAR {
+		CodeNode *node = new CodeNode();
+		std::string func_name = $1;
+		CodeNode *args = $3;
+		
+		std::string temp = make_temp();
+		node->code += ". " + temp + "\n";
+		node->name = temp;
+		node->code += "call " + func_name + ", " + temp + "\n";
+
+		$$ = node;
+	}
 
 assignment: IDENTIFIER EQUAL operation SMCOL{
 		CodeNode *node = new CodeNode();

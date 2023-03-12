@@ -108,8 +108,8 @@ std::vector<std::string> arg_list;
 %type <node> term
 %type <node> return_call
 %type <node> function_call
-%type <node> func_arguments
-%type <node> func_argument
+%type <node> func_call_arguments
+%type <node> func_call_argument
 %%
 
 prog_start: %empty /* epsilon */ {}
@@ -290,7 +290,7 @@ declaration: declared_term SMCOL{
 		$$ = node;
 	}
 
-function_call: IDENTIFIER L_PAR func_arguments R_PAR {
+function_call: IDENTIFIER L_PAR func_call_arguments R_PAR {
 		CodeNode *node = new CodeNode();
 		std::string func_name = $1;
 		CodeNode *args = $3;
@@ -304,11 +304,11 @@ function_call: IDENTIFIER L_PAR func_arguments R_PAR {
 		$$ = node;
 	}
 
-func_arguments: func_argument {
+func_call_arguments: func_call_argument {
                 CodeNode *node = $1;
                 $$ = node;
         }
-        | func_argument COMMA func_arguments {
+        | func_call_argument COMMA func_call_arguments {
                 CodeNode *node = new CodeNode();
                 CodeNode *arg = $1;
                 CodeNode *args = $3;
@@ -322,7 +322,7 @@ func_arguments: func_argument {
         }
 
 
-func_argument: %empty /* epsilon */ {
+func_call_argument: %empty /* epsilon */ {
                 CodeNode *node = new CodeNode();
                 node->code = "";
                 $$ = node;

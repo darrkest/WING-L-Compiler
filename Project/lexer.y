@@ -402,7 +402,7 @@ read_call: READ L_PAR IDENTIFIER L_SQUARE term R_SQUARE R_PAR SMCOL {
 	| READ L_PAR IDENTIFIER R_PAR SMCOL {
 		CodeNode *node = new CodeNode();
                 std::string ident = $3;
-                node->code = ".> " + ident + "\n";
+                node->code = ".< " + ident + "\n";
                 $$ = node;
 	}
 

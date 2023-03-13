@@ -1,0 +1,15 @@
+# This is a nested loop
+
+funct main {
+	int i;
+	int j;
+	i = 0;
+	while (i < 2) {
+		j = 1;
+		while (j < 4) {
+			write(j);
+			j = j + 1;
+		}
+		i = i + 1;
+	}
+}

@@ -12,6 +12,4 @@ funct main {
    read(n);
    fib_n = fibonacci(n);
    write(fib_n);
-
-   return 0;
 }

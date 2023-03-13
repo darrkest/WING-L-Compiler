@@ -1,0 +1,13 @@
+# This is a simple loop with a break statement
+
+funct main {
+	int i;
+	i = 0;
+	while (i < 11) {
+		write(i);
+		if (i > 2) {
+			break;
+		}
+		i = i + 1;
+	}
+}

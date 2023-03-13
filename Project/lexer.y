@@ -116,7 +116,6 @@ std::vector<std::string> arg_list;
 %type <node> write_call
 %type <node> while_call
 %type <node> assignment
-%type <node> comparison
 %type <node> operation
 %type <node> multiplicative_operation
 %type <node> term
@@ -463,6 +462,7 @@ while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL {
 	}
 
 if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call else_call {
+		// TODO
 		CodeNode *node = new CodeNode();
 		$$ = node;
 	}

@@ -306,14 +306,6 @@ statement: declaration {
 		CodeNode *node = $1;
 		$$ = node;
 	}
-	| elif_call {
-		CodeNode *node = $1;
-		$$ = node;
-	}
-	| else_call {
-		CodeNode *node = $1;
-		$$ = node;
-	}
 	
 declaration: declared_term SMCOL{
 		CodeNode *node = $1;
@@ -464,6 +456,22 @@ while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL {
 if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call else_call {
 		// TODO
 		CodeNode *node = new CodeNode();
+		CodeNode *comp = $3;
+		CodeNode *states = $6;
+		CodeNode *_else = $9;
+		
+		std::string true_label = new_label();
+		std::string end_label = new_label();
+	
+		node->code = ". " + comp->name + "\n";
+		node->code += comp->code;
+		node->code += "?:= " + true_label + ", " + comp->name + "\n";
+		node->code += ":= " + end_label + "\n";
+		node->code += ": " + true_label + "\n";
+		node->code += states->code;
+		node->code += _else->code;
+		node->code += ": " + end_label + "\n";
+		
 		$$ = node;
 	}
 

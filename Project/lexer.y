@@ -124,7 +124,6 @@ std::vector<std::string> arg_list;
 %type <node> func_call_arguments
 %type <node> func_call_argument
 %type <node> if_call
-%type <node> elif_call
 %type <node> else_call
 %type <node> comparison
 
@@ -453,49 +452,52 @@ while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL {
                 $$ = node;
 	}
 
-if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call else_call {
-		// TODO
+if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL {
+		CodeNode *node = new CodeNode();
+                CodeNode *comp = $3;
+                CodeNode *states = $6;
+
+                std::string true_label = new_label();
+                std::string end_label = new_label();
+
+                node->code = ". " + comp->name + "\n";
+                node->code += comp->code;
+                node->code += "?:= " + true_label + ", " + comp->name + "\n";
+                node->code += ":= " + end_label + "\n";
+                node->code += ": " + true_label + "\n";
+                node->code += states->code;
+                node->code += ": " + end_label + "\n";
+
+                $$ = node;
+	}
+	| IFBR L_PAR comparison R_PAR L_CURL statements R_CURL else_call {
 		CodeNode *node = new CodeNode();
 		CodeNode *comp = $3;
 		CodeNode *states = $6;
-		CodeNode *_else = $9;
+		CodeNode *_else = $8;
 		
 		std::string true_label = new_label();
 		std::string end_label = new_label();
+		std::string else_label = new_label();
 	
 		node->code = ". " + comp->name + "\n";
 		node->code += comp->code;
 		node->code += "?:= " + true_label + ", " + comp->name + "\n";
-		node->code += ":= " + end_label + "\n";
+		node->code += ":= " + else_label + "\n";
 		node->code += ": " + true_label + "\n";
 		node->code += states->code;
+		node->code += ":= " + end_label + "\n";
+		node->code += ": " + else_label + "\n";
 		node->code += _else->code;
 		node->code += ": " + end_label + "\n";
 		
 		$$ = node;
 	}
 
-elif_call: %empty /*epsilon*/ {
+else_call: ELSEBR L_CURL statements R_CURL {
 		CodeNode *node = new CodeNode();
-		node->code = "";
-		$$ = node;
-	}
-	| ELIFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call {
-		CodeNode *node = new CodeNode();
-		node->code = "";
-		$$ = node;
-		// not needed for phase 4 :)
-	}
-
-else_call: %empty /*epsilon*/ {
-		CodeNode *node = new CodeNode();
-		node->code = "";
-		$$ = node;
-	}
-	| ELSEBR L_CURL statements R_CURL {
-		// TODO
-		CodeNode *node = new CodeNode();
-		node->code = "";
+		CodeNode *states = $3;
+		node->code = states->code;
 		$$ = node;
 	}
 

@@ -110,6 +110,11 @@ std::vector<std::string> arg_list;
 %type <node> function_call
 %type <node> func_call_arguments
 %type <node> func_call_argument
+%type <node> if_call
+%type <node> elif_call
+%type <node> else_call
+%type <node> comparison
+
 %%
 
 prog_start: %empty /* epsilon */ {}
@@ -281,9 +286,18 @@ statement: declaration {
 		$$ = node;
 	}
 	| while_call {}
-	| if_call {}
-	| elif_call {}
-	| else_call {}
+	| if_call {
+		CodeNode *node = $1;
+		$$ = node;
+	}
+	| elif_call {
+		CodeNode *node = $1;
+		$$ = node;
+	}
+	| else_call {
+		CodeNode *node = $1;
+		$$ = node;
+	}
 	
 declaration: declared_term SMCOL{
 		CodeNode *node = $1;
@@ -411,19 +425,50 @@ return_call: RETURN operation SMCOL {
 	
 while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL {}
 
-if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call else_call {}
+if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call else_call {
+		CodeNode *node = new CodeNode();
+		$$ = node;
+	}
 
-elif_call: %empty /*epsilon*/ {}
-	| ELIFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call {}
+elif_call: %empty /*epsilon*/ {
+		CodeNode *node = new CodeNode();
+		node->code = "";
+		$$ = node;
+	}
+	| ELIFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call {
+		CodeNode *node = new CodeNode();
+		node->code = "";
+		$$ = node;
+		// not needed for phase 4 :)
+	}
 
-else_call: %empty /*epsilon*/ {}
-	| ELSEBR L_CURL statements R_CURL {}
+else_call: %empty /*epsilon*/ {
+		CodeNode *node = new CodeNode();
+		node->code = "";
+		$$ = node;
+	}
+	| ELSEBR L_CURL statements R_CURL {
+		// TODO
+		CodeNode *node = new CodeNode();
+		node->code = "";
+		$$ = node;
+	}
 
-comparison: term comp term {}
-
-comp: LESSER {}
-	| GREATER {}
-	| EQUALTO {}
+comparison: term LESSER term {
+		// TODO
+		CodeNode *node = new CodeNode();
+		$$ = node;
+	}
+	| term GREATER term {
+		// TODO
+		CodeNode *node = new CodeNode();
+		$$ = node;
+	}
+	| term EQUALTO term {
+		// TODO
+		CodeNode *node = new CodeNode();
+		$$ = node;
+	}
 
 operation: multiplicative_operation PLUS multiplicative_operation {
 		CodeNode *node = new CodeNode();

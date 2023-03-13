@@ -69,6 +69,18 @@ std::string make_temp() {
 	return os.str();
 }
 
+std::string new_label() {
+        std::ostringstream os;
+        os << "_label_" << global_variable_counter++;
+        return os.str();
+}
+
+std::string new_temp() {
+        std::ostringstream os;
+        os << "_temp_" << global_variable_counter++;
+        return os.str();
+}
+
 int arg_counter = -1;
 std::vector<std::string> arg_list;
 
@@ -102,7 +114,9 @@ std::vector<std::string> arg_list;
 %type <node> declared_term
 %type <node> read_call
 %type <node> write_call
+%type <node> while_call
 %type <node> assignment
+%type <node> comparison
 %type <node> operation
 %type <node> multiplicative_operation
 %type <node> term
@@ -285,7 +299,10 @@ statement: declaration {
 		CodeNode *node = $1;
 		$$ = node;
 	}
-	| while_call {}
+	| while_call {
+		CodeNode *node = $1;
+		$$ = node;
+	}
 	| if_call {
 		CodeNode *node = $1;
 		$$ = node;
@@ -423,7 +440,27 @@ return_call: RETURN operation SMCOL {
 		$$ = node;
 	}
 	
-while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL {}
+while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL {
+		CodeNode *node = new CodeNode();
+                CodeNode *comp = $3;
+                CodeNode *states = $6;
+
+                std::string start_label = new_label(); // _label_0
+                std::string body_label = new_label(); // _label_1
+                std::string end_label = new_label(); // _label_2
+
+                node->code = ". " + comp->name + "\n";
+                node->code += ": " + start_label  + "\n";
+                node->code += comp->code;
+                node->code += "?:= " + body_label + ", " + comp->name + "\n";
+                node->code += ":= " + end_label + "\n";
+                node->code += ": " + body_label + "\n";
+                node->code += states->code;
+                node->code += ":= " + start_label + "\n";
+                node->code += ": " + end_label + "\n";
+
+                $$ = node;
+	}
 
 if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL elif_call else_call {
 		CodeNode *node = new CodeNode();
@@ -455,20 +492,35 @@ else_call: %empty /*epsilon*/ {
 	}
 
 comparison: term LESSER term {
-		// TODO
-		CodeNode *node = new CodeNode();
-		$$ = node;
-	}
-	| term GREATER term {
-		// TODO
-		CodeNode *node = new CodeNode();
-		$$ = node;
-	}
-	| term EQUALTO term {
-		// TODO
-		CodeNode *node = new CodeNode();
-		$$ = node;
-	}
+                CodeNode *node = new CodeNode();
+                CodeNode *term1 = $1;
+                CodeNode *term2 = $3;
+
+                node->name = new_temp();
+                node->code = "< " + node->name + ", " + term1->name + ", " + term2->name + "\n";
+
+                $$ = node;
+        }
+        | term GREATER term {
+                CodeNode *node = new CodeNode();
+                CodeNode *term1 = $1;
+                CodeNode *term2 = $3;
+
+                node->name = new_temp();
+                node->code = "> " + node->name + ", " + term1->name + ", " + term2->name + "\n";
+
+                $$ = node;
+        }
+        | term EQUALTO term {
+                CodeNode *node = new CodeNode();
+                CodeNode *term1 = $1;
+                CodeNode *term2 = $3;
+
+                node->name = new_temp();
+                node->code = "= " + node->name + ", " + term1->name + ", " + term2->name + "\n";
+
+                $$ = node;
+        }
 
 operation: multiplicative_operation PLUS multiplicative_operation {
 		CodeNode *node = new CodeNode();

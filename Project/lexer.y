@@ -66,7 +66,9 @@ int global_label_counter = 0;
 int global_iftrue_counter = 0;
 int global_else_counter = 0;
 int global_endif_counter = 0;
-
+int global_loop_counter = 0;
+int global_loopbody_counter = 0;
+int global_endloop_counter = 0;
 
 std::string make_temp() {
         std::ostringstream os;
@@ -103,6 +105,24 @@ std::string new_endif() {
         std::ostringstream os;
         os << "endif" << global_endif_counter++;
         return os.str();
+}
+
+std::string new_loop() {
+	std::ostringstream os;
+	os << "beginloop" << global_loop_counter++;
+	return os.str();
+}
+
+std::string new_loopbody() {
+	std::ostringstream os;
+	os << "loopbody" << global_loopbody_counter++;
+	return os.str();
+}
+
+std::string new_endloop() {
+	std::ostringstream os;
+	os << "endloop" << global_endloop_counter++;
+	return os.str();
 }
 
 int arg_counter = -1;
@@ -464,7 +484,7 @@ break_call: BREAK SMCOL {
 		   This string is equivalent to "end_label" in the while loop.
 		   Need to find a way to do this in while_call or move end_label into break_call somehow
 		*/
-		std::string label = "_label_7";
+		std::string label = new_endloop();
 		node->code = ":= " + label + "\n";
 		$$ = node;
 	}
@@ -474,9 +494,9 @@ while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL {
                 CodeNode *comp = $3;
                 CodeNode *states = $6;
 
-                std::string start_label = new_label(); // _label_0
-                std::string body_label = new_label(); // _label_1
-                std::string end_label = new_label(); // _label_2
+                std::string start_label = new_loop(); // _label_0
+                std::string body_label = new_loopbody(); // _label_1
+                std::string end_label = new_endloop(); // _label_2
 
                 node->code = ". " + comp->name + "\n";
                 node->code += ": " + start_label  + "\n";

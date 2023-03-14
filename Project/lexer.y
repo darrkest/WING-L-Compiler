@@ -61,23 +61,47 @@ void print_symbol_table(void) {
 }
 
 int global_variable_counter = 0;
+int global_variable_counter2 = 0;
+int global_label_counter = 0;
+int global_iftrue_counter = 0;
+int global_else_counter = 0;
+int global_endif_counter = 0;
+
 
 std::string make_temp() {
-	std::ostringstream os;
-	os << "_temp" << global_variable_counter++;
-	//printf("make_temp call\n");
-	return os.str();
+        std::ostringstream os;
+        os << "_temp" << global_variable_counter++;
+        //printf("make_temp call\n");
+        return os.str();
 }
 
 std::string new_label() {
         std::ostringstream os;
-        os << "_label_" << global_variable_counter++;
+        os << "_label_" << global_label_counter++;
         return os.str();
 }
 
 std::string new_temp() {
         std::ostringstream os;
-        os << "_temp_" << global_variable_counter++;
+        os << "_temp_" << global_variable_counter2++;
+        return os.str();
+}
+
+std::string new_iftrue() {
+        std::ostringstream os;
+        os << "if_true" << global_iftrue_counter++;
+        return os.str();
+}
+
+std::string new_else() {
+        std::ostringstream os;
+        os << "else" << global_else_counter++;
+        return os.str();
+}
+
+std::string new_endif() {
+        std::ostringstream os;
+        os << "endif" << global_endif_counter++;
         return os.str();
 }
 
@@ -472,8 +496,8 @@ if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL {
                 CodeNode *comp = $3;
                 CodeNode *states = $6;
 
-                std::string true_label = new_label();
-                std::string end_label = new_label();
+                std::string true_label = new_iftrue();
+                std::string end_label = new_endif();
 
                 node->code = ". " + comp->name + "\n";
                 node->code += comp->code;
@@ -491,9 +515,9 @@ if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL {
 		CodeNode *states = $6;
 		CodeNode *_else = $8;
 		
-		std::string true_label = new_label();
-		std::string end_label = new_label();
-		std::string else_label = new_label();
+		std::string true_label = new_iftrue();
+		std::string end_label = new_endif();
+		std::string else_label = new_else();
 	
 		node->code = ". " + comp->name + "\n";
 		node->code += comp->code;

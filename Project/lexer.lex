@@ -45,6 +45,7 @@ IDENTIFIER {ALPHA}|{ALPHA}(_|{ALPHA})*
 ","	 { errorPosition += yyleng; return COMMA;}
 ";"  { errorPosition += yyleng; return SMCOL;}
 "return" { errorPosition += yyleng; return RETURN;}
+"break" { errorPosition += yyleng; return BREAK;}
 
 "#"(.)*	 { }
 " "	 { errorPosition += yyleng; }

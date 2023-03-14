@@ -82,7 +82,6 @@ std::string new_temp() {
 }
 
 int arg_counter = -1;
-std::vector<std::string> arg_list;
 
 %}
 
@@ -99,6 +98,7 @@ std::vector<std::string> arg_list;
 %token LESSER GREATER EQUALTO NOT NOTEQUAL AND OR
 %token IFBR ELIFBR ELSEBR WLOOP 
 %token READ WRITE
+%token BREAK
 
 %token <op_val> NUMBER
 %token <op_val> IDENTIFIER
@@ -126,7 +126,7 @@ std::vector<std::string> arg_list;
 %type <node> if_call
 %type <node> else_call
 %type <node> comparison
-
+%type <node> break_call
 %%
 
 prog_start: %empty /* epsilon */ {}
@@ -305,6 +305,10 @@ statement: declaration {
 		CodeNode *node = $1;
 		$$ = node;
 	}
+	| break_call {
+		CodeNode *node = $1;
+		$$ = node;
+	}
 	
 declaration: declared_term SMCOL{
 		CodeNode *node = $1;
@@ -427,6 +431,17 @@ return_call: RETURN operation SMCOL {
 		CodeNode *op = $2;
 		node->code = op->code;
 		node->code += "ret " + op->name + "\n"; 
+		$$ = node;
+	}
+
+break_call: BREAK SMCOL {
+		CodeNode *node = new CodeNode();
+		/* Hard coded for now lol
+		   This string is equivalent to "end_label" in the while loop.
+		   Need to find a way to do this in while_call or move end_label into break_call somehow
+		*/
+		std::string label = "_label_7";
+		node->code = ":= " + label + "\n";
 		$$ = node;
 	}
 	

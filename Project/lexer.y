@@ -4,7 +4,7 @@
 #include<vector>
 #include<string.h>
 #include <stdio.h>
-
+#include <stdlib.h>
 extern int yylex(void);
 void yyerror(const char *msg);
 extern int errorLine;
@@ -672,7 +672,10 @@ multiplicative_operation: term {
                 $$ = node;
 	}
 
-term: %empty /*epsilon*/ {}
+term: %empty /*epsilon*/ {
+		std::string errMsg = "Missing term";
+		yyerror(errMsg.c_str());	
+	}
 	| L_PAR operation R_PAR {
 		CodeNode *node = $2;
 		$$ = node;
@@ -686,6 +689,7 @@ term: %empty /*epsilon*/ {}
 		CodeNode *node = new CodeNode();
 		std::string ident = $1;
 		CodeNode *arr = $3;
+
 		std::string temp = make_temp();
 		node->name = temp;
 		node->code = ". " + temp + "\n";

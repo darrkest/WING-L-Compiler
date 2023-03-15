@@ -182,6 +182,12 @@ int arg_counter = -1;
 prog_start: %empty /* epsilon */ {}
 	| functions {
 		CodeNode *node = $1;
+		int tableSize = symbol_table.size()-1;
+		Symbol s = symbol_table[tableSize];
+		if (s.name != "main") {
+			std::string errMsg = "No function named main found";
+			yyerror(errMsg.c_str());
+		}
 		printf("%s\n", node->code.c_str());
 	}
 

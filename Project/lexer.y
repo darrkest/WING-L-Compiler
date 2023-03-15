@@ -125,6 +125,12 @@ std::string new_endloop() {
 	return os.str();
 }
 
+std::string curr_endloop() {
+	std::ostringstream os;
+	os << "endloop" << global_endloop_counter;
+	return os.str();
+}
+
 int arg_counter = -1;
 
 %}
@@ -484,7 +490,7 @@ break_call: BREAK SMCOL {
 		   This string is equivalent to "end_label" in the while loop.
 		   Need to find a way to do this in while_call or move end_label into break_call somehow
 		*/
-		std::string label = new_endloop();
+		std::string label = curr_endloop();
 		node->code = ":= " + label + "\n";
 		$$ = node;
 	}

@@ -310,6 +310,12 @@ declared_term: INTEGER IDENTIFIER {
 		Type t = Array;
 		temp_add_to_symbol_table(var_name, t);
 		
+		unsigned int arrNum;
+                sscanf(arrSize->name.c_str(), "%d", &arrNum);
+                if (arrNum <= 0) {
+			yyerror("Array cannot be of size <= 0");
+		}
+
 		CodeNode *node = new CodeNode();
 		node->name = var_name;
 		node->code = ".[] " + var_name + ", " + arrSize->name + "\n";
@@ -695,7 +701,6 @@ term: %empty /*epsilon*/ {
 		CodeNode *node = new CodeNode();
 		std::string ident = $1;
 		CodeNode *arr = $3;
-
 		std::string temp = make_temp();
 		node->name = temp;
 		node->code = ". " + temp + "\n";

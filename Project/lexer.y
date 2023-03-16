@@ -148,7 +148,7 @@ int arg_counter = -1;
 %token LESSER GREATER EQUALTO NOT NOTEQUAL AND OR
 %token IFBR ELIFBR ELSEBR WLOOP 
 %token READ WRITE
-%token BREAK
+%token BREAK CONTINUE
 
 %token <op_val> NUMBER
 %token <op_val> IDENTIFIER

@@ -229,6 +229,10 @@ int arg_counter = -1;
 %type <node> else_call
 %type <node> comparison
 %type <node> break_call
+%type <node> continue_call
+%type <node> while_statements
+%type <node> while_statement
+%type <node> if_while_call
 %%
 
 prog_start: %empty /* epsilon */ {}
@@ -419,10 +423,61 @@ statement: declaration {
 		CodeNode *node = $1;
 		$$ = node;
 	}
-	| break_call {
+
+while_statements: %empty /* epsilon */ {
+                CodeNode *node = new CodeNode();
+                node->code = "";
+                $$ = node;
+        }
+        | while_statement while_statements {
+                CodeNode *node = new CodeNode();
+                CodeNode *state = $1;
+                CodeNode *states = $2;
+                node->code = state->code + states->code;
+                $$ = node;
+        }
+
+while_statement: declaration {
+                CodeNode *node = $1;
+                $$ = node;
+        }
+        | function_call {
+                CodeNode *node = $1;
+                $$ = node;
+        }
+        | assignment {
+                CodeNode *node = $1;
+                $$ = node;
+        }
+        | read_call   {
+                CodeNode *node = $1;
+                $$ = node;
+        }
+        | write_call {
+                CodeNode *node = $1;
+                $$ = node;
+        }
+        | return_call {
+                CodeNode *node = $1;
+                $$ = node;
+        }
+        | while_call {
+                CodeNode *node = $1;
+                $$ = node;
+        }
+        | if_while_call {
+                CodeNode *node = $1;
+                $$ = node;
+        }
+        | break_call {
+                CodeNode *node = $1;
+                $$ = node;
+        }
+	| continue_call {
 		CodeNode *node = $1;
 		$$ = node;
 	}
+
 	
 declaration: declared_term SMCOL{
 		CodeNode *node = $1;
@@ -550,16 +605,18 @@ return_call: RETURN operation SMCOL {
 
 break_call: BREAK SMCOL {
 		CodeNode *node = new CodeNode();
-		/* Hard coded for now lol
-		   This string is equivalent to "end_label" in the while loop.
-		   Need to find a way to do this in while_call or move end_label into break_call somehow
-		*/
 		std::string label = curr_endloop();
 		node->code = ":= " + label + "\n";
 		$$ = node;
 	}
+
+continue_call: CONTINUE SMCOL {
+		CodeNode *node = new CodeNode();
+		node->code = "";
+		$$ = node;
+	}
 	
-while_call: WLOOP L_PAR comparison R_PAR L_CURL statements R_CURL {
+while_call: WLOOP L_PAR comparison R_PAR L_CURL while_statements R_CURL {
 		CodeNode *node = new CodeNode();
                 CodeNode *comp = $3;
                 CodeNode *states = $6;
@@ -622,6 +679,48 @@ if_call: IFBR L_PAR comparison R_PAR L_CURL statements R_CURL {
 		
 		$$ = node;
 	}
+
+if_while_call: IFBR L_PAR comparison R_PAR L_CURL while_statements R_CURL {
+                CodeNode *node = new CodeNode();
+                CodeNode *comp = $3;
+                CodeNode *states = $6;
+
+                std::string true_label = new_iftrue();
+                std::string end_label = new_endif();
+
+                node->code = ". " + comp->name + "\n";
+                node->code += comp->code;
+                node->code += "?:= " + true_label + ", " + comp->name + "\n";
+                node->code += ":= " + end_label + "\n";
+                node->code += ": " + true_label + "\n";
+                node->code += states->code;
+                node->code += ": " + end_label + "\n";
+
+                $$ = node;
+        }
+	| IFBR L_PAR comparison R_PAR L_CURL while_statements R_CURL else_call {
+                CodeNode *node = new CodeNode();
+                CodeNode *comp = $3;
+                CodeNode *states = $6;
+                CodeNode *_else = $8;
+
+                std::string true_label = new_iftrue();
+                std::string end_label = new_endif();
+                std::string else_label = new_else();
+
+                node->code = ". " + comp->name + "\n";
+                node->code += comp->code;
+                node->code += "?:= " + true_label + ", " + comp->name + "\n";
+                node->code += ":= " + else_label + "\n";
+                node->code += ": " + true_label + "\n";
+                node->code += states->code;
+                node->code += ":= " + end_label + "\n";
+                node->code += ": " + else_label + "\n";
+                node->code += _else->code;
+                node->code += ": " + end_label + "\n";
+
+                $$ = node;
+        }
 
 else_call: ELSEBR L_CURL statements R_CURL {
 		CodeNode *node = new CodeNode();

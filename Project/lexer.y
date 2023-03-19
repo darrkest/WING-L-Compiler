@@ -24,7 +24,13 @@ struct Symbol {
 	Type type;
 };
 
+struct funcSymbol{
+    	std::string funcName; //1 number of the function it is in (i.e. 1,2,3..) 1 contains variables from the first funct, 2 contains variables from second func
+    	Symbol sym;           //2 actual symbol passed in from the symbol_table
+};
+
 std::vector<Symbol> symbol_table;
+std::vector<funcSymbol> sepaTable; //the new vector that will organize the variables in each function by number (kinda like a function table)
 
 bool find(std::string &value) {
 	Symbol s = symbol_table[symbol_table.size()-1];
@@ -58,6 +64,52 @@ void print_symbol_table(void) {
 	}
   }
   printf("--------------------\n");
+}
+
+int vecIncr = 0; //this is the number that determines which varaible is assigned to which function number from the symbol table (in ascending order)
+std::string make_numV(){//needed to turn integer into string, each variable has a number corresponding to it based on which function it is in
+        std::ostringstream os;
+        os << vecIncr++;
+        return os.str();
+}
+
+void var_separator(void){
+    std::string funSymName; //function name (number from make_numV()) being passed into the new funcSymbol type vector
+    for(int i = 0; i < symbol_table.size(); i++){
+        if(vecIncr == 0) {
+            funSymName = make_numV();
+        }
+        if(symbol_table[i].type == 0 || symbol_table[i].type == 1){
+            funcSymbol fs;
+            fs.funcName = funSymName;
+            fs.sym = symbol_table[i];
+            sepaTable.push_back(fs);
+        }
+        if(symbol_table[i].type == 2){
+            funSymName = make_numV();
+        }
+    }
+
+    for(int i = 0; i < sepaTable.size();i++){
+        printf("-------------------------\n");
+        printf("  Function number: %s\n", sepaTable[i].funcName.c_str());
+        printf("Function var name: %s\n", sepaTable[i].sym.name.c_str());
+   //   printf("Function var type: %s\n", sepaTable[i].sym.type.c_str());
+        printf("-------------------------\n");
+    }
+
+        int dupe_c = 0;
+        for(int i = 0; i < sepaTable.size(); i++){
+                for(int j = 0; j < sepaTable.size(); j++){ // checks same delcare in the same function and  make sure to not set off the check against itself
+                        if(sepaTable[j].sym.name == sepaTable[i].sym.name && i != j && sepaTable[j].funcName == sepaTable[i].funcName){
+                                printf("Same name delcaration detected. \n");
+                                dupe_c++;
+                        }
+                }
+        }
+        if (dupe_c == 0){
+                printf("Same name delcaration NOT detected. \n");
+        }
 }
 
 int global_variable_counter = 0;
@@ -719,6 +771,7 @@ term: %empty /*epsilon*/ {
 int main (int argc, char *argv[]) {
   yyparse();
   print_symbol_table();
+  var_separator();
   return 0;
 }
 

@@ -527,6 +527,16 @@ func_call_argument: %empty /* epsilon */ {
 assignment: IDENTIFIER EQUAL operation SMCOL{
 		CodeNode *node = new CodeNode();
 		std::string ident = $1;
+		varFound = false;
+		std::string currFunc = func_table[func_table.size()-1];
+		for (int i = 0; i < symbol_table.size(); ++i) {
+			if (symbol_table[i].name == ident && symbol_table[i].func_name == currFunc) {
+				varFound = true;
+			}
+		}
+		if (!varFound) {
+			yyerror("Attempting to use variable not yet declared");
+		}
 		CodeNode *rhs = $3;
 		node->code += rhs->code;
 		node->code += "= " + ident + ", " + rhs->name + "\n";
@@ -535,6 +545,17 @@ assignment: IDENTIFIER EQUAL operation SMCOL{
 	| IDENTIFIER L_SQUARE term R_SQUARE EQUAL operation SMCOL {
 		CodeNode *node = new CodeNode();
 		std::string ident = $1;
+		varFound = false;
+                std::string currFunc = func_table[func_table.size()-1];
+                for (int i = 0; i < symbol_table.size(); ++i) {
+                        if (symbol_table[i].name == ident && symbol_table[i].func_name == currFunc) {
+                                varFound = true;
+                        }
+                }
+                if (!varFound) {
+                        yyerror("Attempting to use variable not yet declared");
+                }
+
 		CodeNode *index = $3;
 		CodeNode *rhs = $6;
 		node->code += rhs->code;
@@ -827,11 +848,31 @@ term: %empty /*epsilon*/ {
 	| IDENTIFIER {
 		CodeNode *node = new CodeNode();
 		node->name = $1;
+		varFound = false;
+		std::string currFunc = func_table[func_table.size()-1];
+		for (int i = 0; i < symbol_table.size(); ++i) {
+			if (node->name == symbol_table[i].name && currFunc == symbol_table[i].func_name) {
+				varFound = true;
+			}
+		}
+		if (!varFound || symbol_table.size() == 0) {
+			yyerror("Attempting to use variable not yet declared");
+		}
 		$$ = node;
 	}
 	| IDENTIFIER L_SQUARE term R_SQUARE {
 		CodeNode *node = new CodeNode();
 		std::string ident = $1;
+		varFound = false;
+                std::string currFunc = func_table[func_table.size()-1];
+                for (int i = 0; i < symbol_table.size(); ++i) {
+                        if (node->name == symbol_table[i].name && currFunc == symbol_table[i].func_name) {
+                                varFound = true;
+                        }
+                }
+                if (!varFound || symbol_table.size() == 0) {
+                        yyerror("Attempting to use variable not yet declared");
+                }
 		CodeNode *arr = $3;
 		std::string temp = make_temp();
 		node->name = temp;

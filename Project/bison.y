@@ -876,14 +876,14 @@ term: %empty /*epsilon*/ {
 		varFound = false;
                 std::string currFunc = func_table[func_table.size()-1];
                 for (int i = 0; i < symbol_table.size(); ++i) {
-                        if (node->name == symbol_table[i].name && currFunc == symbol_table[i].func_name) {
+                        if (ident == symbol_table[i].name && currFunc == symbol_table[i].func_name) {
                                 varFound = true;
                         }
                 }
                 if (!varFound) {
                         yyerror("Attempting to use variable not yet declared");
                 }
-		if (getType(node->name) != Array) {
+		if (getType(ident) != Array) {
 			yyerror("Attempting to use variable of type integer as array");
 		}
 		CodeNode *arr = $3;

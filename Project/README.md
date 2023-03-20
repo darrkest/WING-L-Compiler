@@ -67,6 +67,7 @@ x[3] = 5;         # Assign value of 5 to the 4th element of array x
 | ;                  | SMCOL      |
 | read               | READ       |
 | return             | RETURN     |
+| break              | BREAK      |
 | continue           | CONTINUE   |
 | write              | WRITE      |
 | funct              | FUNCTION   |

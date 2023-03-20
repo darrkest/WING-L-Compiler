@@ -560,7 +560,7 @@ assignment: IDENTIFIER EQUAL operation SMCOL{
                 if (!varFound) {
                         yyerror("Attempting to use variable not yet declared");
                 }
-		if (getType(node->name) != Array) {
+		if (getType(ident) != Array) {
                         yyerror("Attempting to use variable of type integer as array");
                 }
 		CodeNode *index = $3;

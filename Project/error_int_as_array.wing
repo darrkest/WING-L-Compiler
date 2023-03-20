@@ -1,0 +1,4 @@
+funct main {
+	int a;
+	a[1] = 200;
+}

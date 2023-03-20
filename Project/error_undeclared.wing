@@ -1,0 +1,6 @@
+# Error 1: Using a variable without having first declared it
+funct main {
+	int a;
+	int b;
+	c = a + b;
+}

@@ -1,0 +1,14 @@
+funct add(int a, int b) {
+	return a + b;
+}
+
+funct main {
+	int a;
+	int b;
+	int c;
+	int d;
+	a = 10;
+	b = 2;
+	c = add(a,b);
+	c = mult(a,b);
+}

@@ -1,0 +1,9 @@
+funct main {
+	int a;
+	while (a < 11) {
+		if (a == 2) {
+			break;
+		}
+	}
+	continue;
+}

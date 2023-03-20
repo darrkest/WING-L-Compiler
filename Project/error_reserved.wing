@@ -1,0 +1,6 @@
+funct main {
+	int else;
+	int a;
+	int b;
+	else = a + b;
+}

@@ -845,7 +845,7 @@ multiplicative_operation: term {
 	}
 
 term: %empty /*epsilon*/ {
-		std::string errMsg = "Missing term";
+		std::string errMsg = "Missing term or negative number";
 		yyerror(errMsg.c_str());	
 	}
 	| L_PAR operation R_PAR {

@@ -124,6 +124,8 @@ std::string curr_endloop() {
 int arg_counter = -1;
 
 bool mainFound = false;
+bool funcFound = false;
+bool varFound = false;
 
 %}
 
@@ -293,6 +295,17 @@ argument: %empty /* epsilon */ {
 declared_term: INTEGER IDENTIFIER {	
 		// Add to symbol table
 		std::string var_name = $2;
+		varFound = false;
+		std::string currFunc = func_table[func_table.size()-1];
+		for (int i = 0; i < symbol_table.size(); ++i) {
+			if (symbol_table[i].func_name == currFunc && symbol_table[i].name == var_name) {
+				varFound = true;
+			}
+		}
+		if (varFound) {
+			yyerror("Variable redeclaration\n");
+		}
+
 		Symbol s;
 		s.name = var_name;
 		s.type = Integer;
@@ -308,6 +321,16 @@ declared_term: INTEGER IDENTIFIER {
 	| INTEGER IDENTIFIER L_SQUARE term R_SQUARE {
 		// Add to symbol table
 		std::string var_name = $2;
+		varFound = false;
+		std::string currFunc = func_table[func_table.size()-1];
+		for (int i = 0; i < symbol_table.size(); ++i) {
+                        if (symbol_table[i].func_name == currFunc && symbol_table[i].name == var_name) {
+                                varFound = true;
+                        }
+                }
+                if (varFound) {
+                        yyerror("Variable redeclaration\n");
+                }
 		CodeNode *arrSize = $4;
 		Symbol s;
 		s.name = var_name;
@@ -438,6 +461,16 @@ function_call: IDENTIFIER L_PAR func_call_arguments R_PAR {
 		std::string func_name = $1;
 		CodeNode *args = $3;
 		
+		funcFound = false;
+		for (int i = 0; i < func_table.size(); ++i) {
+			if (func_table[i] == func_name) {
+				funcFound = true;
+			}
+		}
+		if (!funcFound) {
+			yyerror("Function call to function that does not exist\n");
+		}
+
 		std::string temp = make_temp();
 		node->code = args->code;
 		node->code += ". " + temp + "\n";

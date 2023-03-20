@@ -28,13 +28,15 @@ struct Symbol {
 std::vector<Symbol> symbol_table;
 std::vector<std::string> func_table;
 
-bool find(std::string &value) {
-	Symbol s = symbol_table[symbol_table.size()-1];
+Type getType(std::string curr) {
+	Type t;
+	std::string currFunc = func_table[func_table.size()-1];
 	for (int i = 0; i < symbol_table.size(); ++i) {
-		if (s.name == value) {
-			return true;
+		if (curr == symbol_table[i].name && currFunc == symbol_table[i].func_name) {
+			t = symbol_table[i].type;
 		}
 	}
+	return t;
 }
 
 void print_symbol_table(void) {
@@ -265,7 +267,7 @@ argument: %empty /* epsilon */ {
                 std::string var_name = $2;
 		Symbol s;
 		s.name = var_name;
-		s.type = Array;
+		s.type = Integer;
 		s.func_name = func_table[func_table.size()-1];
 		symbol_table.push_back(s);
 		
@@ -537,6 +539,9 @@ assignment: IDENTIFIER EQUAL operation SMCOL{
 		if (!varFound) {
 			yyerror("Attempting to use variable not yet declared");
 		}
+		if (getType(node->name) != Integer) {
+                        yyerror("Attempting to use variable of type array as integer");
+                }
 		CodeNode *rhs = $3;
 		node->code += rhs->code;
 		node->code += "= " + ident + ", " + rhs->name + "\n";
@@ -555,7 +560,9 @@ assignment: IDENTIFIER EQUAL operation SMCOL{
                 if (!varFound) {
                         yyerror("Attempting to use variable not yet declared");
                 }
-
+		if (getType(node->name) != Array) {
+                        yyerror("Attempting to use variable of type integer as array");
+                }
 		CodeNode *index = $3;
 		CodeNode *rhs = $6;
 		node->code += rhs->code;
@@ -855,8 +862,11 @@ term: %empty /*epsilon*/ {
 				varFound = true;
 			}
 		}
-		if (!varFound || symbol_table.size() == 0) {
+		if (!varFound) {
 			yyerror("Attempting to use variable not yet declared");
+		}
+		if (getType(node->name) != Integer) {
+			yyerror("Attempting to use variable of type array as integer");
 		}
 		$$ = node;
 	}
@@ -870,9 +880,12 @@ term: %empty /*epsilon*/ {
                                 varFound = true;
                         }
                 }
-                if (!varFound || symbol_table.size() == 0) {
+                if (!varFound) {
                         yyerror("Attempting to use variable not yet declared");
                 }
+		if (getType(node->name) != Array) {
+			yyerror("Attempting to use variable of type integer as array");
+		}
 		CodeNode *arr = $3;
 		std::string temp = make_temp();
 		node->name = temp;

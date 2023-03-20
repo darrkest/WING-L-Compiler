@@ -18,19 +18,15 @@ char *identToken;
 int numberToken;
 int count_names = 0;
 
-enum Type { Integer, Array, Function };
+enum Type { Integer, Array };
 struct Symbol {
 	std::string name;
 	Type type;
-};
-
-struct funcSymbol{
-    	std::string funcName; //1 number of the function it is in (i.e. 1,2,3..) 1 contains variables from the first funct, 2 contains variables from second func
-    	Symbol sym;           //2 actual symbol passed in from the symbol_table
+	std::string func_name;
 };
 
 std::vector<Symbol> symbol_table;
-std::vector<funcSymbol> sepaTable; //the new vector that will organize the variables in each function by number (kinda like a function table)
+std::vector<std::string> func_table;
 
 bool find(std::string &value) {
 	Symbol s = symbol_table[symbol_table.size()-1];
@@ -41,75 +37,18 @@ bool find(std::string &value) {
 	}
 }
 
-void temp_add_to_symbol_table(std::string &value, Type t) {
-	Symbol s;
-	s.name = value;
-	s.type = t;
-	symbol_table.push_back(s);	
-}
-
 void print_symbol_table(void) {
   printf("symbol table:\n");
   printf("--------------------\n");
+  std::string currFunc;
   for(int i=0; i<symbol_table.size(); i++) {
-	std::string temp;
-	if (symbol_table[i].type == 0) {
-		printf("   locals (int): %s\n", symbol_table[i].name.c_str());
+	if (symbol_table[i].func_name != currFunc) {
+		printf("func: %s\n", symbol_table[i].func_name.c_str());
+		currFunc = symbol_table[i].func_name;
 	}
-	else if (symbol_table[i].type == 1) {
-		printf("   locals (array): %s\n", symbol_table[i].name.c_str());
-	}
-	else if (symbol_table[i].type == 2) {
-		printf("function: %s\n", symbol_table[i].name.c_str());
-	}
+	printf("   local: %s\n", symbol_table[i].name.c_str());
   }
   printf("--------------------\n");
-}
-
-int vecIncr = 0; //this is the number that determines which varaible is assigned to which function number from the symbol table (in ascending order)
-std::string make_numV(){//needed to turn integer into string, each variable has a number corresponding to it based on which function it is in
-        std::ostringstream os;
-        os << vecIncr++;
-        return os.str();
-}
-
-void var_separator(void){
-    std::string funSymName; //function name (number from make_numV()) being passed into the new funcSymbol type vector
-    for(int i = 0; i < symbol_table.size(); i++){
-        if(vecIncr == 0) {
-            funSymName = make_numV();
-        }
-        if(symbol_table[i].type == 0 || symbol_table[i].type == 1){
-            funcSymbol fs;
-            fs.funcName = funSymName;
-            fs.sym = symbol_table[i];
-            sepaTable.push_back(fs);
-        }
-        if(symbol_table[i].type == 2){
-            funSymName = make_numV();
-        }
-    }
-
-    for(int i = 0; i < sepaTable.size();i++){
-        printf("-------------------------\n");
-        printf("  Function number: %s\n", sepaTable[i].funcName.c_str());
-        printf("Function var name: %s\n", sepaTable[i].sym.name.c_str());
-   //   printf("Function var type: %s\n", sepaTable[i].sym.type.c_str());
-        printf("-------------------------\n");
-    }
-
-        int dupe_c = 0;
-        for(int i = 0; i < sepaTable.size(); i++){
-                for(int j = 0; j < sepaTable.size(); j++){ // checks same delcare in the same function and  make sure to not set off the check against itself
-                        if(sepaTable[j].sym.name == sepaTable[i].sym.name && i != j && sepaTable[j].funcName == sepaTable[i].funcName){
-                                printf("Same name delcaration detected. \n");
-                                dupe_c++;
-                        }
-                }
-        }
-        if (dupe_c == 0){
-                printf("Same name delcaration NOT detected. \n");
-        }
 }
 
 int global_variable_counter = 0;
@@ -125,7 +64,6 @@ int global_endloop_counter = 0;
 std::string make_temp() {
         std::ostringstream os;
         os << "_temp" << global_variable_counter++;
-        //printf("make_temp call\n");
         return os.str();
 }
 
@@ -185,6 +123,8 @@ std::string curr_endloop() {
 
 int arg_counter = -1;
 
+bool mainFound = false;
+
 %}
 
 %union {
@@ -238,11 +178,13 @@ int arg_counter = -1;
 prog_start: %empty /* epsilon */ {}
 	| functions {
 		CodeNode *node = $1;
-		int tableSize = symbol_table.size()-1;
-		Symbol s = symbol_table[tableSize];
-		if (s.name != "main") {
-			std::string errMsg = "No function named main found";
-			yyerror(errMsg.c_str());
+		for (int i = 0; i < func_table.size(); ++i) {
+			if (func_table[i] == "main") {
+				mainFound = true;
+			}
+		}
+		if (!mainFound) {
+			yyerror("Function main not found\n");
 		}
 		printf("%s\n", node->code.c_str());
 	}
@@ -260,36 +202,31 @@ functions: %empty /* epsilon */ {
 		$$ = node;
 	}
 
-function: FUNCTION IDENTIFIER L_PAR arguments R_PAR L_CURL statements R_CURL {
-		// Add to symbol table
-                std::string func_name = $2;
-                Type t = Function;
-                temp_add_to_symbol_table(func_name,t);
+function: FUNCTION IDENTIFIER {
+		CodeNode *node = new CodeNode;
+		std::string id = $2;
+		std::string funcName = id;
 		
-		// Add the "func func_name"
+		func_table.push_back(funcName);
+		node->code = "func " + id + "\n";
+		$$ = node;
+	}
+	| L_PAR arguments R_PAR L_CURL statements R_CURL {
                 CodeNode *node = new CodeNode();
-                node->code = "func " + func_name + "\n";
 		// Add the arguments code
-		CodeNode *args = $4;
+		CodeNode *args = $2;
 		node->code += args->code;
 		// Add the statements code
-		CodeNode *states = $7;
+		CodeNode *states = $5;
 		node->code += states->code;
 
 		node->code += "endfunc\n";
 		arg_counter = -1;
 		$$ = node;
 	}
-	| FUNCTION IDENTIFIER L_CURL statements R_CURL {
-		// Add to symbol table
-                std::string func_name = $2;
-                Type t = Function;
-                temp_add_to_symbol_table(func_name,t);
-
-                CodeNode *node = new CodeNode();
-                node->code = "func " + func_name + "\n";
-		
-		CodeNode *states = $4;
+	| L_CURL statements R_CURL {
+                CodeNode *node = new CodeNode();	
+		CodeNode *states = $2;
 		node->code += states->code;
 		node->code += "endfunc\n";
 		$$ = node;
@@ -324,9 +261,12 @@ argument: %empty /* epsilon */ {
 
                 // Add to symbol table
                 std::string var_name = $2;
-                Type t = Integer;
-                temp_add_to_symbol_table(var_name, t);
-
+		Symbol s;
+		s.name = var_name;
+		s.type = Array;
+		s.func_name = func_table[func_table.size()-1];
+		symbol_table.push_back(s);
+		
                 CodeNode *node = new CodeNode();
                 node->name = var_name;
 
@@ -338,8 +278,11 @@ argument: %empty /* epsilon */ {
                 // Add to symbol table
                 std::string var_name = $2;
                 CodeNode *arrSize = $4;
-                Type t = Array;
-                temp_add_to_symbol_table(var_name, t);
+		Symbol s;
+		s.name = var_name;
+		s.type = Array;
+		s.func_name = func_table[func_table.size()-1];
+		symbol_table.push_back(s);
 
                 CodeNode *node = new CodeNode();
                 node->name = var_name;
@@ -350,8 +293,11 @@ argument: %empty /* epsilon */ {
 declared_term: INTEGER IDENTIFIER {	
 		// Add to symbol table
 		std::string var_name = $2;
-		Type t = Integer;
-		temp_add_to_symbol_table(var_name, t);
+		Symbol s;
+		s.name = var_name;
+		s.type = Integer;
+		s.func_name = func_table[func_table.size()-1];
+		symbol_table.push_back(s);
 
 		CodeNode *node = new CodeNode();
 		node->name = var_name;
@@ -363,9 +309,12 @@ declared_term: INTEGER IDENTIFIER {
 		// Add to symbol table
 		std::string var_name = $2;
 		CodeNode *arrSize = $4;
-		Type t = Array;
-		temp_add_to_symbol_table(var_name, t);
-		
+		Symbol s;
+		s.name = var_name;
+		s.type = Array;
+		s.func_name = func_table[func_table.size()-1];
+		symbol_table.push_back(s);
+	
 		unsigned int arrNum;
                 sscanf(arrSize->name.c_str(), "%d", &arrNum);
                 if (arrNum <= 0) {
@@ -537,7 +486,6 @@ func_call_argument: %empty /* epsilon */ {
                 $$ = node;
         }
         | operation {
-                // function call operation stuff goes here
                 CodeNode *node = $1;
 		node->code += "param " + node->name + "\n";
                 $$ = node;
@@ -870,7 +818,6 @@ term: %empty /*epsilon*/ {
 int main (int argc, char *argv[]) {
   yyparse();
   print_symbol_table();
-  var_separator();
   return 0;
 }
 
